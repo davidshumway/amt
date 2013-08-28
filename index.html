@@ -38,7 +38,7 @@
 	}
 	function load() {
 		create_xhr();
-		xhr.onreadystatechange = loader_();
+		xhr.onreadystatechange = load_time;
 		xhr.open('GET', 'https://gist.github.com/their/9182d2e720bf12d5f961/raw/23b9092f472b937876b82f21a13f7ca72d00cc27/last_update');
 		xhr.send();
 	}
