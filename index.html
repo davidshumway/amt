@@ -9,6 +9,55 @@
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
     <title>Amt</title>
+    
+    <script type="text/javascript">
+	
+	var xhr;
+	
+	var last_update = 0;
+	
+	function create_xhr() {
+		if (window.XMLHttpRequest) { // Mozilla, Safari, ...
+			xhr = new XMLHttpRequest();
+		} else if (window.ActiveXObject) { // IE
+			try {
+				xhr = new ActiveXObject("Msxml2.XMLHTTP");
+			} 
+			catch (e) {
+				try {
+					xhr = new ActiveXObject("Microsoft.XMLHTTP");
+				} 
+				catch (e) {}
+			}
+		}
+		if (!xhr) {
+			alert('Giving up :( Cannot create an XMLHTTP instance');
+			return false;
+		}
+		return true;
+	}
+	function load() {
+		create_xhr();
+		xhr.onreadystatechange = loader_();
+		xhr.open('GET', 'https://gist.github.com/their/9182d2e720bf12d5f961/raw/23b9092f472b937876b82f21a13f7ca72d00cc27/last_update');
+		xhr.send();
+	}
+	function load_time() {
+		if (xhr.readyState === 4) {
+			if (xhr.status == 200) {
+				var rs = xhr.responseText;
+				console.log(rs);
+			}
+		}
+	}
+	
+	
+	load();
+	
+	//var xhrTimeout = setTimeout(function(){ updater.ajaxTimeout(); }, updater.xhrMaxTime);
+	
+	</script>
+	
   </head>
 
   <body>
@@ -21,16 +70,20 @@
           <h1 id="project_title">Amt</h1>
           <h2 id="project_tagline"></h2>
 
-            <section id="downloads">
+            <!--<section id="downloads">
               <a class="zip_download_link" href="https://github.com/their/amt/zipball/master">Download this project as a .zip file</a>
               <a class="tar_download_link" href="https://github.com/their/amt/tarball/master">Download this project as a tar.gz file</a>
-            </section>
+            </section>-->
         </header>
     </div>
 
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
+		  
+		  
+		  
+		  <!--
         <h3>
 <a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
 
@@ -61,7 +114,10 @@ $ git checkout gh-pages
 <h3>
 <a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>-->
+
+
+
       </section>
     </div>
 
