@@ -90,7 +90,8 @@ makeCorsRequest();*/
 	function load() {
 		create_xhr();
 		xhr.onreadystatechange = load_time;
-		xhr.open('GET', 'https://raw.github.com/their/amt/gh-pages/params.json');
+		//xhr.open('GET', 'https://raw.github.com/their/amt/gh-pages/params.json');
+		xhr.open('GET', 'params.json');
 		xhr.send();
 	}
 	function load_time() {
