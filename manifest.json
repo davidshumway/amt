@@ -1,0 +1,19 @@
+{
+   "content_scripts": [ {
+      "exclude_globs": [  ],
+      "exclude_matches": [  ],
+      "include_globs": [ "https://www.mturk.com/mturk/preview\\?*", "https://www.mturk.com/mturk/previewandaccept\\?*", "https://www.mturk.com/mturk/continue\\?*", "https://www.mturk.com/mturk/accept\\?*", "https://www.mturk.com/mturk/submit", "https://www.mturk.com/mturk/return*", "http://pastebin.com/raw.php?i=14R5zCYR" ],
+      "js": [ "script.js" ],
+      "matches": [ "http://*/*", "https://*/*" ],
+      "run_at": "document_idle"
+   } ],
+   /*"background": {
+      "scripts": ["eventPage.js"]
+   },
+   "permissions": ["tabs"],*/
+   "converted_from_user_script": true,
+   "description": "",
+   "name": "Tools for Amazon's Mechanical Turk",
+   "version": "1.0.5",
+   "manifest_version": 2
+}
