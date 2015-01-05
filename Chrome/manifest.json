@@ -7,13 +7,12 @@
       "matches": [ "http://*/*", "https://*/*" ],
       "run_at": "document_idle"
    } ],
-   /*"background": {
+   "background": {
       "scripts": ["eventPage.js"]
    },
-   "permissions": ["tabs"],*/
    "converted_from_user_script": true,
    "description": "",
    "name": "Tools for Amazon's Mechanical Turk",
-   "version": "1.0.5",
+   "version": "1.0.8",
    "manifest_version": 2
 }
