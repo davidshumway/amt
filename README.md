@@ -30,6 +30,8 @@ Notes:
 There are no guarantees made regarding the safety of using this extension on Amazon's Mechanical Turk website. The extension's author is not responsible for any risks associated with the use of this extension.
 
 Version History:
+1.0.9 -- In Firefox 34 calls to localStorage.hasOwnProperty() causes the script to exit prematurely. This is now fixed.
+
 1.0.8 -- Fixed small bug, audio did not play in one case.
 
 1.0.7 -- Removed base64 audio snippets. Removed adding audio snippets from Pastebin. Placed the audio .ogg files within the extension.

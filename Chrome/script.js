@@ -62,7 +62,7 @@ var OBJECT_MT_TOOLS_LOCAL_STORAGE;
 var audio_snippets;
 
 // is_mozilla
-var is_mozilla = true;
+var is_mozilla = false;
 
 // This is the tools div.
 // 		'create':'div',
@@ -84,8 +84,10 @@ var globals = {
  * Remove old localStorage embedded audio
  * The key is 'OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME.
  * This is audio from prior to 1.0.7, 12 Sep 2014.
+ * 
+ * Bug in Firefox 34. Firefox 34 does not support `localStorage.hasOwnProperty`.
  */
-if (localStorage.hasOwnProperty('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME)) {
+if (localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME]) {
 	delete localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME];
 }
 
