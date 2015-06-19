@@ -42,6 +42,16 @@
     
     
     // ..........................
+    /* jshint node:true *//* global define, escape, unescape */
+    'use strict';
+    
+    
+    /**
+     * SHA-1 hash function reference implementation.
+     *
+     * @namespace
+     */
+    var Sha1 = {};
     Sha1.hash = function(msg) {
       // convert string to UTF-8, as SHA only deals with byte-streams
       msg = msg.utf8Encode();
