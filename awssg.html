@@ -70,23 +70,23 @@
         <p>For Requesters on the website mturk.com, Amazon.com's Mechanical Turk workplace.
     		
     		For example, 
-        <pre><code style="zoom:0.4;">
-        &lt;script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"&gt;&lt;/script&gt;  
-        &lt;script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"&gt;&lt;/script&gt;  
-        &lt;script&gt;
-        function generate_key() {
-          var select = document.getElementById('operations').value;
-          var showsg = document.getElementById('signature');
-          var showts = document.getElementById('timestamp');
-          var service = "AWSMechanicalTurkRequester";
-          var timestamp = new Date().toISOString();
-          var operation = select.value; // e.g. "GetAccountBalance"
-          var secret = this.value;
-          var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
-          showsg.value = signature;
-          showts.value = signature;
-        }
-        &lt;/script&gt;
+        <pre><code style="zoom:0.8;">
+&lt;script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"&gt;&lt;/script&gt;  
+&lt;script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"&gt;&lt;/script&gt;  
+&lt;script&gt;
+function generate_key() {
+  var select = document.getElementById('operations').value;
+  var showsg = document.getElementById('signature');
+  var showts = document.getElementById('timestamp');
+  var service = "AWSMechanicalTurkRequester";
+  var timestamp = new Date().toISOString();
+  var operation = select.value; // e.g. "GetAccountBalance"
+  var secret = this.value;
+  var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+  showsg.value = signature;
+  showts.value = signature;
+}
+&lt;/script&gt;
         </code></pre>
         
         Operation:<select id="operations"></select><br />
@@ -94,8 +94,21 @@
         <input type="button" value="Generate Signature!" onclick="generate_key();" style="zoom:2;" /><br />
         Results<br />
         Signature:<input type="text" id="signature" disabled /><br />
-        Timestamp:<input type="text" id="timestamp" disabled />
-        
+        Timestamp:<input type="text" id="timestamp" disabled /><br />
+        <br />
+        For example, to assign a qualification to a worker:
+        <pre><code style="zoom:0.4;">
+https://mechanicalturk.amazonaws.com/?Service=AWSMechanicalTurkRequester
+&AWSAccessKeyId=[REQUESTER_ACCESS_KEY_ID, e.g. 123RVWYBAZW00EXAMPLE]
+&Version=2014-08-15
+&Operation=AssignQualification
+&Signature=[SIGNATURE FROM ABOVE]
+&Timestamp=[TIMESTAMP FROM ABOVE]
+&QualificationTypeId=[QUALIFICATIONID, e.g. 789RVWYBAZW00EXAMPLE]
+&WorkerId=[WORKERID, e.g. AZ3456EXAMPLE]
+&IntegerValue=[QUALIFICATION_VALUE, e.g. 90]
+&SendNotification=[true|false, Default If Blank=true]
+        </code></pre>
       </section>
     </div>
 
