@@ -16,87 +16,26 @@
     
     window.onload = function() {
       // Populate select field
-      var opts = [
-        ApproveAssignment
-
-ApproveRejectedAssignment
-
-AssignQualification
-
-BlockWorker
-
-ChangeHITTypeOfHIT
-
-CreateHIT
-
-CreateQualificationType
-
-DisableHIT
-
-DisposeHIT
-
-DisposeQualificationType
-
-ExtendHIT
-
-ForceExpireHIT
-
-GetAccountBalance
-
-GetAssignment
-
-GetAssignmentsForHIT
-
-GetBlockedWorkers
-
-GetBonusPayments
-
-GetFileUploadURL
-
-GetHIT
-
-GetHITsForQualificationType
-
-GetQualificationsForQualificationType
-
-GetQualificationRequests
-
-GetQualificationScore
-
-GetQualificationType
-
-GetReviewableHITs
-
-GetReviewResultsForHIT
-
-GetRequesterStatistic
-
-GetRequesterWorkerStatistic
-
-GrantBonus
-
-GrantQualification
-
-NotifyWorkers
-
-RegisterHITType
-
-RejectAssignment
-
-RejectQualificationRequest
-
-RevokeQualification
-
-SearchHITs
-
-SearchQualificationTypes
-
-SendTestEventNotification
-
-SetHITAsReviewing
-
-SetHITTypeNotification
-      ];
+      // This is retrieved from `http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_OperationsArticle.html`.
+      // Retrieval date: June 19, 2015.
+      var opts = ["ApproveAssignment","ApproveRejectedAssignment","AssignQualification","BlockWorker","ChangeHITTypeOfHIT","CreateHIT","CreateQualificationType","DisableHIT","DisposeHIT","DisposeQualificationType","ExtendHIT","ForceExpireHIT","GetAccountBalance","GetAssignment","GetAssignmentsForHIT","GetBlockedWorkers","GetBonusPayments","GetFileUploadURL","GetHIT","GetHITsForQualificationType","GetQualificationsForQualificationType","GetQualificationRequests","GetQualificationScore","GetQualificationType","GetReviewableHITs","GetReviewResultsForHIT","GetRequesterStatistic","GetRequesterWorkerStatistic","GrantBonus","GrantQualification","NotifyWorkers","RegisterHITType","RejectAssignment","RejectQualificationRequest","RevokeQualification","SearchHITs","SearchQualificationTypes","SendTestEventNotification","SetHITAsReviewing","SetHITTypeNotification"];
+      var select = document.getElementById('operations');
+      for (var i in opts) {
+        var opt = document.createElement('option');
+        opt.innerText = opts[i];
+        opt.value = opts[i];
+        select.appendChild(opt);
+      }
+    }
+    function generate_key() {
+      var select = document.getElementById('operations').value;
+      var show = document.getElementById('signature').value;
+      var service = "AWSMechanicalTurkRequester";
+      var timestamp = new Date().toISOString();
+      var operation = select.value; // e.g. "GetAccountBalance"
+      var secret = this.value;
+      var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+      show.value = signature;
     }
   </head>
 
