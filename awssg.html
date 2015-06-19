@@ -1,20 +1,160 @@
 ``
-<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
-<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>  
-<script>
-var service = "AWSMechanicalTurkRequester";
-var timestamp = new Date().toISOString();
-var operation = "GetAccountBalance";
-var secret = "YOURSECRETKEY";
-var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
-</script>
-``
-<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
-<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>  
-<script>
-var service = "AWSMechanicalTurkRequester";
-var timestamp = new Date().toISOString();
-var operation = "GetAccountBalance";
-var secret = "YOURSECRETKEY";
-var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
-</script>
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Amt : " />
+    <meta name="google-site-verification" content="LIdfgDAdUGlmyNC1zN-w7zmL0dyZr0Urdc8WKbJhEpc" /><!--Google Site Verification June 17 2015-->
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>AMT AWS Requester Services URL Generator</title>
+    
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>
+    
+    window.onload = function() {
+      // Populate select field
+      var opts = [
+        ApproveAssignment
+
+ApproveRejectedAssignment
+
+AssignQualification
+
+BlockWorker
+
+ChangeHITTypeOfHIT
+
+CreateHIT
+
+CreateQualificationType
+
+DisableHIT
+
+DisposeHIT
+
+DisposeQualificationType
+
+ExtendHIT
+
+ForceExpireHIT
+
+GetAccountBalance
+
+GetAssignment
+
+GetAssignmentsForHIT
+
+GetBlockedWorkers
+
+GetBonusPayments
+
+GetFileUploadURL
+
+GetHIT
+
+GetHITsForQualificationType
+
+GetQualificationsForQualificationType
+
+GetQualificationRequests
+
+GetQualificationScore
+
+GetQualificationType
+
+GetReviewableHITs
+
+GetReviewResultsForHIT
+
+GetRequesterStatistic
+
+GetRequesterWorkerStatistic
+
+GrantBonus
+
+GrantQualification
+
+NotifyWorkers
+
+RegisterHITType
+
+RejectAssignment
+
+RejectQualificationRequest
+
+RevokeQualification
+
+SearchHITs
+
+SearchQualificationTypes
+
+SendTestEventNotification
+
+SetHITAsReviewing
+
+SetHITTypeNotification
+      ];
+    }
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/their/amt">View on GitHub</a>
+
+          <h1 id="project_title">Tools for Amazon's Mechanical Turk</h1>
+          
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/their/amt/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/their/amt/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        
+        <p>For Requesters on the website mturk.com, Amazon.com's Mechanical Turk workplace.
+    		
+    		For example, 
+        <pre><code>
+        <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
+        <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>  
+        <script>
+        function generate_key() {
+          var service = "AWSMechanicalTurkRequester";
+          var timestamp = new Date().toISOString();
+          var operation = "GetAccountBalance";
+          var secret = this.value;
+          var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+        }
+        </script>
+        </code></pre>
+        
+        <select id="operations"></select>
+        <input type="text" id="key" placeholder="YOURSECRETKEY" />
+        <input type="button" value="Generate Signature!" onclick="generate_key();" />
+        <input type="text" id="signature" />
+        
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Tools for Amazon's Mechanical Turk maintained by David Shumway and FLBS: <a href="https://github.com/their">their</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
