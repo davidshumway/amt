@@ -90,7 +90,7 @@ function generate_key() {
         </code></pre>
         
         Operation:<select id="operations"></select><br />
-        AWS Secret Key:<input type="text" id="key" placeholder="YOURSECRETKEY" /><br />
+        AWS Requester Secret Key:<input type="text" id="key" placeholder="YOURSECRETKEY" /><br />
         <input type="button" value="Generate Signature!" onclick="generate_key();" style="zoom:2;" /><br />
         Results<br />
         Signature:<input type="text" id="signature" disabled /><br />
@@ -99,7 +99,7 @@ function generate_key() {
         For example, to assign a qualification to a worker:
         <pre><code style="zoom:1;">
 https://mechanicalturk.amazonaws.com/?Service=AWSMechanicalTurkRequester
-&AWSAccessKeyId=[REQUESTER_ACCESS_KEY_ID, e.g. 123RVWYBAZW00EXAMPLE]
+&AWSAccessKeyId=[AWS_REQUESTER_ACCESS_KEY, e.g. 123RVWYBAZW00EXAMPLE]
 &Version=2014-08-15
 &Operation=AssignQualification
 &Signature=[SIGNATURE FROM ABOVE]
