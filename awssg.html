@@ -40,7 +40,7 @@
       console.log(str + ' ' + secret);
       var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
       showsg.value = signature;
-      showts.value = signature;
+      showts.value = timestamp;
     }
     
     </script>
