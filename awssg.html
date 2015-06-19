@@ -49,8 +49,8 @@
       var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
       showsg.value = signature;
       showts.value = timestamp;
-      showsg.value = encodeURIComponent(signature);
-      showts.value = encodeURIComponent(timestamp);
+      ecshowsg.value = encodeURIComponent(signature);
+      ecshowts.value = encodeURIComponent(timestamp);
     }
     
     </script>
@@ -85,16 +85,23 @@
 &lt;script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"&gt;&lt;/script&gt;  
 &lt;script&gt;
 function generate_key() {
-  var select = document.getElementById('operations').value;
+  var key = document.getElementById('key');
+  var select = document.getElementById('operations');
   var showsg = document.getElementById('signature');
   var showts = document.getElementById('timestamp');
+  var ecshowsg = document.getElementById('ecsignature');
+  var ecshowts = document.getElementById('ectimestamp');
   var service = "AWSMechanicalTurkRequester";
   var timestamp = new Date().toISOString();
   var operation = select.value; // e.g. "GetAccountBalance"
-  var secret = this.value;
-  var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+  var secret = key.value;
+  var str = service + operation + timestamp;
+  console.log(str + ' ' + secret);
+  var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
   showsg.value = signature;
-  showts.value = signature;
+  showts.value = timestamp;
+  ecshowsg.value = encodeURIComponent(signature);
+  ecshowts.value = encodeURIComponent(timestamp);
 }
 &lt;/script&gt;
         </code></pre>
