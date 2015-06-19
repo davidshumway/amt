@@ -1,0 +1,20 @@
+``
+<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
+<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>  
+<script>
+var service = "AWSMechanicalTurkRequester";
+var timestamp = new Date().toISOString();
+var operation = "GetAccountBalance";
+var secret = "YOURSECRETKEY";
+var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+</script>
+``
+<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
+<script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>  
+<script>
+var service = "AWSMechanicalTurkRequester";
+var timestamp = new Date().toISOString();
+var operation = "GetAccountBalance";
+var secret = "YOURSECRETKEY";
+var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+</script>
