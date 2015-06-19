@@ -28,7 +28,7 @@
       }
     }
     function generate_key() {
-      var select = document.getElementById('operations').value;
+      var select = document.getElementById('operations');
       var showsg = document.getElementById('signature');
       var showts = document.getElementById('timestamp');
       var service = "AWSMechanicalTurkRequester";
@@ -36,7 +36,7 @@
       var operation = select.value; // e.g. "GetAccountBalance"
       var secret = this.value;
       var str = service + operation + timestamp;
-      console.log(str + ' ' + str);
+      console.log(str + ' ' + secret);
       var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
       showsg.value = signature;
       showts.value = signature;
