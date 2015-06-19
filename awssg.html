@@ -120,10 +120,10 @@ function generate_key() {
         Operation:<select id="operations"></select><br />
         AWS Requester Secret Key:<input type="text" id="key" placeholder="YOURSECRETKEY" /><br />
         <input type="button" value="Generate Signature!" onclick="generate_key();" style="zoom:2;" /><br />
-        Results<br />
+        <h3>Results:</h3>
         Signature:<input type="text" id="signature" disabled /><br />
         Timestamp:<input type="text" id="timestamp" disabled /><br />
-        Results URL Encoded<br />
+        Results in URL Encoded Format:<br />
         Signature:<input type="text" id="ecsignature" disabled /><br />
         Timestamp:<input type="text" id="ectimestamp" disabled /><br />
         <br />
@@ -134,8 +134,8 @@ https://mechanicalturk.amazonaws.com/?Service=AWSMechanicalTurkRequester
 &AWSAccessKeyId=[AWS_REQUESTER_ACCESS_KEY, e.g. 123RVWYBAZW00EXAMPLE]
 &Version=2014-08-15
 &Operation=AssignQualification
-&Signature=[SIGNATURE FROM ABOVE]
-&Timestamp=[TIMESTAMP FROM ABOVE]
+&Signature=[SIGNATURE FROM ABOVE IN ENCODED URL FORMAT]
+&Timestamp=[TIMESTAMP FROM ABOVE IN ENCODED URL FORMAT]
 &QualificationTypeId=[QUALIFICATIONID, e.g. 789RVWYBAZW00EXAMPLE]
 &WorkerId=[WORKERID, e.g. AZ3456EXAMPLE]
 &IntegerValue=[QUALIFICATION_VALUE, e.g. 90]
