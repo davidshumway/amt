@@ -45,7 +45,6 @@
       var operation = select.value; // e.g. "GetAccountBalance"
       var secret = key.value;
       var str = service + operation + timestamp;
-      console.log(str + ' ' + secret);
       var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
       showsg.value = signature;
       showts.value = timestamp;
@@ -77,9 +76,20 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         
-        <p>For Requesters on the website mturk.com, Amazon.com's Mechanical Turk workplace.
+        <p>AMT AWS Requester Services URL Generator.
+        For Requesters on the website mturk.com, Amazon.com's Mechanical Turk workplace.
+        In order to make a web request "REST"to the Amazon mturk.com API it is necessary to provide a "signature".
+        According to the AWS documentation this signature is generated in the following manner:
+        
+        <code>
+  A request signature, an HMAC, is calculated by concatenating the values of the Service, Operation, and Timestamp parameters, in that order, and then calculating an RFC 2104-compliant HMAC, using the Secret Access Key as the "key." 
+        </code>
+        
+    		Generally speaking the signature is the only dynamic portion of most AMT AWS Requester Services requests.
+    		Although in the documentation there are only examples of calculating the signature in Java, Python, etc., it is of course possible to calculate it using JavaScript.
     		
-    		For example, 
+    		For example, by including the following two libraries...</p>
+    		
         <pre><code style="zoom:0.8;">
 &lt;script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"&gt;&lt;/script&gt;  
 &lt;script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"&gt;&lt;/script&gt;  
@@ -96,7 +106,6 @@ function generate_key() {
   var operation = select.value; // e.g. "GetAccountBalance"
   var secret = key.value;
   var str = service + operation + timestamp;
-  console.log(str + ' ' + secret);
   var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
   showsg.value = signature;
   showts.value = timestamp;
@@ -106,6 +115,8 @@ function generate_key() {
 &lt;/script&gt;
         </code></pre>
         
+        <p>
+        AMT AWS Requester Services URL Generator.<br />
         Operation:<select id="operations"></select><br />
         AWS Requester Secret Key:<input type="text" id="key" placeholder="YOURSECRETKEY" /><br />
         <input type="button" value="Generate Signature!" onclick="generate_key();" style="zoom:2;" /><br />
@@ -116,7 +127,8 @@ function generate_key() {
         Signature:<input type="text" id="ecsignature" disabled /><br />
         Timestamp:<input type="text" id="ectimestamp" disabled /><br />
         <br />
-        For example, to assign a qualification to a worker:
+        For example, to assign a qualification to a worker:</p>
+        
         <pre><code style="zoom:1;">
 https://mechanicalturk.amazonaws.com/?Service=AWSMechanicalTurkRequester
 &AWSAccessKeyId=[AWS_REQUESTER_ACCESS_KEY, e.g. 123RVWYBAZW00EXAMPLE]
