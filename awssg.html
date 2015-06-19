@@ -14,6 +14,7 @@
     <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
     <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>
     
+    <script type="text/javascript">
     window.onload = function() {
       // Populate select field
       // This is retrieved from `http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_OperationsArticle.html`.
@@ -37,6 +38,7 @@
       var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
       show.value = signature;
     }
+    </script>
   </head>
 
   <body>
@@ -68,11 +70,16 @@
         <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>  
         <script>
         function generate_key() {
+          var select = document.getElementById('operations').value;
+          var showsg = document.getElementById('signature');
+          var showts = document.getElementById('timestamp');
           var service = "AWSMechanicalTurkRequester";
           var timestamp = new Date().toISOString();
-          var operation = "GetAccountBalance";
+          var operation = select.value; // e.g. "GetAccountBalance"
           var secret = this.value;
           var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+          showsg.value = signature;
+          showts.value = signature;
         }
         </script>
         </code></pre>
