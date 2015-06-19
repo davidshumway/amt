@@ -77,10 +77,12 @@
         </script>
         </code></pre>
         
-        <select id="operations"></select>
-        <input type="text" id="key" placeholder="YOURSECRETKEY" />
-        <input type="button" value="Generate Signature!" onclick="generate_key();" />
-        <input type="text" id="signature" />
+        Operation:<select id="operations"></select><br />
+        AWS Secret Key:<input type="text" id="key" placeholder="YOURSECRETKEY" /><br />
+        <input type="button" value="Generate Signature!" onclick="generate_key();" style="zoom:2;" /><br />
+        Results<br />
+        Signature:<input type="text" id="signature" disabled /><br />
+        Timestamp:<input type="text" id="timestamp" disabled />
         
       </section>
     </div>
