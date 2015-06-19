@@ -13,7 +13,7 @@
     <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/rollups/hmac-sha1.js"></script>  
     <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>
     <style type="text/css">
-      #signature, #timestamp {
+      #signature, #timestamp, #ecsignature, #ectimestamp {
         width: 80%;
       }
       
@@ -38,6 +38,8 @@
       var select = document.getElementById('operations');
       var showsg = document.getElementById('signature');
       var showts = document.getElementById('timestamp');
+      var ecshowsg = document.getElementById('ecsignature');
+      var ecshowts = document.getElementById('ectimestamp');
       var service = "AWSMechanicalTurkRequester";
       var timestamp = new Date().toISOString();
       var operation = select.value; // e.g. "GetAccountBalance"
@@ -47,6 +49,8 @@
       var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
       showsg.value = signature;
       showts.value = timestamp;
+      showsg.value = encodeURIComponent(signature);
+      showts.value = encodeURIComponent(timestamp);
     }
     
     </script>
@@ -101,6 +105,9 @@ function generate_key() {
         Results<br />
         Signature:<input type="text" id="signature" disabled /><br />
         Timestamp:<input type="text" id="timestamp" disabled /><br />
+        Results URL Encoded<br />
+        Signature:<input type="text" id="ecsignature" disabled /><br />
+        Timestamp:<input type="text" id="ectimestamp" disabled /><br />
         <br />
         For example, to assign a qualification to a worker:
         <pre><code style="zoom:1;">
