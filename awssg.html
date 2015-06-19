@@ -35,7 +35,9 @@
       var timestamp = new Date().toISOString();
       var operation = select.value; // e.g. "GetAccountBalance"
       var secret = this.value;
-      var signature = CryptoJS.HmacSHA1(service + operation + timestamp, secret).toString(CryptoJS.enc.Base64);
+      var str = service + operation + timestamp;
+      console.log(str + ' ' + str);
+      var signature = CryptoJS.HmacSHA1(str, secret).toString(CryptoJS.enc.Base64);
       showsg.value = signature;
       showts.value = signature;
     }
