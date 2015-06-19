@@ -14,11 +14,15 @@
     <script src="http://crypto-js.googlecode.com/svn/tags/3.0.2/build/components/enc-base64-min.js"></script>
     <style type="text/css">
       #signature, #timestamp, #ecsignature, #ectimestamp {
-        width: 80%;
+        width: 60%;
       }
       /*Overwrite width of main content. Default=640px.*/
       #main_content {
        max-width: 800px !important;
+      }
+      .span_float {
+        float:left;
+        width:200px;
       }
     </style>
     
@@ -122,16 +126,16 @@ function generate_key() {
         
         <p>
         AMT AWS Requester Services URL Generator.<br />
-        Operation:<select id="operations"></select>
+        <span class="span_float">Operation:</span><select id="operations"></select>
         (<a href="http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMturkAPI/ApiReference_OperationsArticle.html">Operations API Reference</a>)<br />
         AWS Requester Secret Key:<input type="text" id="key" placeholder="YOURSECRETKEY" /><br />
         <input type="button" value="Generate Signature!" onclick="generate_key();" style="zoom:2;" /><br />
         <h4>Results:</h4>
-        Signature:<input type="text" id="signature" disabled /><br />
-        Timestamp:<input type="text" id="timestamp" disabled /><br />
+        <span class="span_float">Signature:</span><input type="text" id="signature" disabled /><br />
+        <span class="span_float">Timestamp:</span><input type="text" id="timestamp" disabled /><br />
         <h4>Results in URL Encoded Format:</h4>
-        Signature:<input type="text" id="ecsignature" disabled /><br />
-        Timestamp:<input type="text" id="ectimestamp" disabled /><br />
+        <span class="span_float">Signature:</span><input type="text" id="ecsignature" disabled /><br />
+        <span class="span_float">Timestamp:</span><input type="text" id="ectimestamp" disabled /><br />
         <br />
         For example, to assign a qualification to a worker:</p>
         
