@@ -333,7 +333,7 @@ function enterKeyEventListener(element) {
 /**
  * function stopAcceptingJobs_run
  */
-function stopAcceptingJobs_run() {
+function stopAcceptingJobs_run() {//alert('a');
 	var autoAcceptTB = document.getElementsByName('autoAcceptEnabled');
 	if(autoAcceptTB && autoAcceptTB.length) {
 		autoAcceptTB = autoAcceptTB[0];
@@ -1948,6 +1948,7 @@ function storage_events_listener(event) {
 	//
 	if (key == 'OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_' + SCRIPT_NAME) {
 		stopAcceptingJobs_run();
+		//~ stopAcceptingJobs_init();
 		return;
 	}
 	
