@@ -3,8 +3,8 @@
   "fullName": "Tools for Amazon's Mechanical Turk",
   "id": "{1a88e21f-76fc-450c-826b-8e62fd58ba0d}",
   "permissions": {"private-browsing": true},
-  "description": "Adds a menu with various tools for Workers.",
+  "description": "For Amazon.com's website Mechanical Turk, mturk.com. Adds a menu with various tools for Workers.",
   "author": "David Shumway",
   "license": "MPL 2.0",
-  "version": "1.0.5"
+  "version": "1.1.1"
 }

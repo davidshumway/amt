@@ -15,17 +15,4 @@ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
 		x.play();
 		
 	}
-	//~ if(request.stopAcceptingNextJobs) {
-		//~ console.log('got stopAcceptingNextJobs');
-		//~ chrome.tabs.query({}, function(allTabs) {
-			//~ console.log(allTabs);
-			//~ if(!allTabs.length)
-				//~ allTabs = [allTabs];
-			//~ for(var i = 0; i < allTabs.length; i++) {
-				//~ chrome.tabs.sendRequest(allTabs[i].id, {doNotAcceptNextTab:true}, function(rs) {
-					//~ //Squelch response
-				//~ });
-			//~ }
-		//~ });
-	//~ }
 });

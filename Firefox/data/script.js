@@ -1,28 +1,10 @@
-// ==UserScript==
-// @name			Tools for Amazon's Mechanical Turk
-// @description		Adds a menu with various tools for Workers.
-// @author			David Shumway
-// @include			https://www.mturk.com/mturk/preview?*
-// @include			https://www.mturk.com/mturk/previewandaccept?*
-// @include			https://www.mturk.com/mturk/continue?*
-// @include			https://www.mturk.com/mturk/accept?*
-// @include			https://www.mturk.com/mturk/submit
-// @include			https://www.mturk.com/mturk/return*
-// @grant			GM_getValue
-// @grant			GM_setValue
-// @grant			GM_deleteValue
-// @grant			GM_addStyle
-// @grant			GM_xmlhttpRequest
-// ==/UserScript==
-
 /**
- * Copyright David Shumway 2013 and FLBS.
+ * Copyright David Shumway 2013-2015 and FLBS.
  * Contact: davidshumway@gmail.com
  * 
  */
 // Firefox UID: {1a88e21f-76fc-450c-826b-8e62fd58ba0d}
 // "jid1-H7gMT3B90X9OHw"
- 
 /**
  * GM functions
  * 
@@ -49,13 +31,7 @@ function GM_addStyle(css) {
  * 
  */
 
-var SCRIPT_NAME		= 'e3DbjxI0oLqiV6emR9bnWz2pXdibP5usIne0MlOc7mD';
-
-// This is now unnecessary.
-//
-//~ // This is the exernal URL of high def. audio snippets. If user opts to install this, the URL is...
-//~ var URL_PASTEBIN	= 'http://pastebin.com/raw.php?i=14R5zCYR'; //481.88 KB
-
+var SCRIPT_NAME = 'e3DbjxI0oLqiV6emR9bnWz2pXdibP5usIne0MlOc7mD';
 
 var OBJECT_MT_TOOLS_LOCAL_STORAGE;
 
@@ -65,8 +41,6 @@ var audio_snippets;
 var is_mozilla = true;
 
 // This is the tools div.
-// 		'create':'div',
-//		'id':SCRIPT_NAME+'div_tools'
 var tools;
 
 // For blink
@@ -84,10 +58,8 @@ var globals = {
  * Remove old localStorage embedded audio
  * The key is 'OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME.
  * This is audio from prior to 1.0.7, 12 Sep 2014.
- * 
- * Bug in Firefox 34. Firefox 34 does not support `localStorage.hasOwnProperty`.
  */
-if (localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME]) {
+if (localStorage.hasOwnProperty('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME)) {
 	delete localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME];
 }
 
@@ -133,8 +105,6 @@ if (GM_getValue('OBJECT_MT_TOOLS_LOCAL_STORAGE'+SCRIPT_NAME) != null) {
  */
 function initial_tool_settings() {
 	
-	//~ console.log('run initial_tool_settings');
-	
 	OBJECT_MT_TOOLS_LOCAL_STORAGE = {
 		
 		'IS_ACTIVE_IFRAME_HEIGHT': false,
@@ -153,7 +123,7 @@ function initial_tool_settings() {
 		
 		'IS_ACTIVE_RETURN_AND_ACCEPT': false,
 		
-		'IFRAME_HEIGHT': 6000, // Change to 6000, 5 Sep 2014, 'IFRAME_HEIGHT': 3000,
+		'IFRAME_HEIGHT': 6000, // Change to 6000, 5 Sep 2014
 		
 		'IFRAME_OFFSET_TOP': 200,
 		
@@ -246,14 +216,6 @@ function fill_audio_info(container_div,selected) {
 		});
 		u.appendChild(document.createTextNode(audio_snippets[x].otitle));
 		container_div.appendChild(u);
-		
-		//container_div.appendChild(document.createTextNode(' '+audio_snippets[x].license));
-		
-		// This is no longer useful.
-		// 12 Sep 2014
-		//~ // embedded size
-		//~ y = audio_snippets_data(false, x*1);
-		//~ container_div.appendChild(document.createTextNode(' '+(y.length / 1000)+'KB'));
 	}
 }
  
@@ -290,46 +252,12 @@ function play_audio(number) {
 	 * Firefox
 	 */
 	else {
-		self.port.emit('audio', file.replace('audio/', ''));
+		try{
+			self.port.emit('audio', file.replace('audio/', ''));
+		} catch(e) {
+			// Ignore
+		}
 	}
-	
-	//~ if (x == 'local') { // Selected in current local storage
-		//~ console.log(x);
-		//~ x = OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET;
-		//~ div_istest = '';
-	//~ } else {
-		//~ // Selected but not saved
-		//~ // change div name
-		//~ div_istest = '_test';
-	//~ }
-	//~ if (document.getElementById(SCRIPT_NAME+'caa'))
-		//~ document.body.removeChild(document.getElementById(SCRIPT_NAME+'caa'));
-	//~ if (document.getElementById(SCRIPT_NAME+'caa_test'))
-		//~ document.body.removeChild(document.getElementById(SCRIPT_NAME+'caa_test'));
-	//~ 
-	//~ b64_audio = audio_snippets_data(false, x*1);
-	//~ 
-	//~ console.log(b64_audio);
-	//~ // play alert
-	//~ //i.e. <audio controls src = "data:audio/mp3;base64,T2dn....3KcK" />
-	//~ caa = el({ // z-index:1010 puts it on top of divs dimmer & menu
-			//~ 'create':'audio',
-			//~ 'style':'\
-					//~ position:fixed;\
-					//~ top:0px;\
-					//~ left:110px;\
-					//~ width:200px;\
-					//~ text-align:center;\
-					//~ z-index:1010;\
-					//~ background-color:MistyRose;\
-					//~ border:2px solid LightCoral;\
-					//~ border-top:0;',
-			//~ 'id':SCRIPT_NAME+'caa'+div_istest,
-			//~ 'controls':'',
-			//~ 'src':b64_audio
-	//~ });
-	//~ document.body.appendChild(caa);
-	//~ document.getElementById(SCRIPT_NAME+'caa'+div_istest).play();
 }
  
 /**
@@ -405,7 +333,7 @@ function enterKeyEventListener(element) {
 /**
  * function stopAcceptingJobs_run
  */
-function stopAcceptingJobs_run() {//alert('a');
+function stopAcceptingJobs_run() {
 	var autoAcceptTB = document.getElementsByName('autoAcceptEnabled');
 	if(autoAcceptTB && autoAcceptTB.length) {
 		autoAcceptTB = autoAcceptTB[0];
@@ -415,71 +343,6 @@ function stopAcceptingJobs_run() {//alert('a');
 	}
 	hideMenu();
 }
-//~ /**
- //~ * function stopAcceptingJobs_init
- //~ */
-//~ function stopAcceptingJobs_init() {
-	//~ console.log('stopAcceptingJobs ran');
-	//~ 
-	// Chrome
-	//
-	//
-	//~ if (!is_mozilla) {
-		//~ chrome.extension.sendRequest(
-			//~ {
-				//~ stopAcceptingNextJobs:true
-			//~ }, function(rs) {/**Squelch Rs*/}
-		//~ );
-	//~ }
-	
-	//~ // Firefox
-	//~ //
-	//~ //
-	//~ if (is_mozilla) {
-		//~ stopAcceptingJobs_run();
-		//~ 
-		// Update storage key.
-		// Just the change event is required.
-		// This runs twice which is unnecessary. Once is enough.
-		//localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = true;
-		//localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = false;
-		//~ 
-		//~ console.log('emit');
-		//~ self.port.emit("doNotAcceptNextTab", true);
-	//~ }
-//~ }
-//~ /**
- //~ * function stopAcceptingJobs_eventListener
- //~ */
-//~ function stopAcceptingJobs_eventListener() { 
-		//~ /**
-		 //~ * Add event-listener for unchecking automatically accept next job textboxes
-		 //~ * 
-		 //~ */
-		//~ // Chrome
-		//~ if (!is_mozilla) {
-			//~ chrome.extension.onRequest.addListener(function(request, sender, sendResponse) {
-				//~ if(request.doNotAcceptNextTab) {
-					//~ 
-					//~ stopAcceptingJobs_run();
-					//~ 
-				//~ }
-			//~ });
-		//~ }
-		//~ // Firefox
-		//~ if (is_mozilla) {
-			//~ self.port.on('doNotAcceptNextTab', function(responseText) {
-				//~ console.log('listener:doNotAcceptNextTab');
-				//~ stopAcceptingJobs_run();
-			//~ });
-		//~ }
-	//~ }
-/*
- * End General Functions 
- */
-
-
-
 /**
  * Function hideMenu
  * 
@@ -602,8 +465,12 @@ function showMenu() {
 			background-color:#000;\
 			opacity:0.4;\
 			filter:alpha(opacity=40);\
-			\
 			cursor:pointer;\
+		}'
+	);
+	GM_addStyle(
+		'#'+SCRIPT_NAME+'menu_div_dim:hover {\
+			background-color:#222;\
 		}'
 	);
 	// div_info
@@ -649,6 +516,23 @@ function showMenu() {
 			margin-left:10px;\
 		}'
 	);
+	// turn_off_auto_accept Button
+	GM_addStyle( // turn_off_auto_accept
+		'.'+SCRIPT_NAME+'clickable_btn {\
+			cursor:pointer;\
+		}'
+	);
+	GM_addStyle( // turn_off_auto_accept
+		'.'+SCRIPT_NAME+'clickable_btn:hover {\
+			background-color:#eee;\
+		}'
+	);
+	//~ GM_addStyle( // turn_off_auto_accept
+		//~ '#'+SCRIPT_NAME+'turn_off_auto_accept:hover {\
+			//~ background-color:LightGreen;\
+		//~ }'
+	//~ );
+	
 	// Menu fader
 	// xx
 	
@@ -907,10 +791,9 @@ function showMenu() {
 	u2 = el({
 		'create':'input',
 		'type':'button',
-		//~ 'style':'margin:auto;display:block;',
 		'id':SCRIPT_NAME+'turn_off_auto_accept',
-		'value':'Disable "Automatically accept the next HIT" in all tabs and windows'
-		//~ 'value':'Uncheck Auto-Accept Checkboxes'
+		'value':'Disable "Automatically accept the next HIT" in all tabs and windows',
+		'class':SCRIPT_NAME+'clickable_btn'
 	});
 	u.appendChild(u2);
 	// Information icon
@@ -1262,56 +1145,47 @@ function showMenu() {
 	});
 	u_= el({
 		'create':'div',
-		'style':'width:60%;margin-left:20%;overflow:hidden;',
+		'style':'width:60%;margin-left:20%;padding-bottom:10px;overflow:hidden;',
 	});
 	u.appendChild(u_);
-	//S/E
-	u3 = el({
-		'create':'div',
-		'style':'float:left;width:50%;',
-	});
 	//Save
 	u2 = el({
 		'create':'input',
 		'type':'button',
 		'id':SCRIPT_NAME+'save',
-		'style':'width:50%;',
-		'value':'Save Settings'
+		'value':'Save Settings',
+		'class':SCRIPT_NAME+'clickable_btn'
 	});
-	u3.appendChild(u2);
+	u_.appendChild(u2);
 	//Exit
 	u2 = el({
 		'create':'input',
 		'type':'button',
 		'id':SCRIPT_NAME+'exit',
-		'value':'Exit Menu'
+		'value':'Exit Menu',
+		'class':SCRIPT_NAME+'clickable_btn'
 	});
-	u3.appendChild(u2);
-	u_.appendChild(u3);
-	//E/D
-	u3 = el({
-		'create':'div',
-		'style':'float:block;overflow:hidden;', // hidden
-	});
+	u_.appendChild(u2);
 	//Enable
 	u2 = el({
 		'create':'input',
 		'type':'button',
 		'id':SCRIPT_NAME+'reset_enable',
-		'value':'Enable All'
+		'value':'Enable All',
+		'class':SCRIPT_NAME+'clickable_btn'
 	});
-	u3.appendChild(u2);
+	u_.appendChild(u2);
 	
 	//Disable
 	u2 = el({
 		'create':'input',
 		'type':'button',
 		'id':SCRIPT_NAME+'reset_disable',
-		'value':'Disable All'
+		'value':'Disable All',
+		'class':SCRIPT_NAME+'clickable_btn'
 	});
-	u3.appendChild(u2);
-	u_.appendChild(u3);
-	//all to menu
+	u_.appendChild(u2);
+	// All to menu
 	theMenu.appendChild(u);
 	
 	/**
@@ -1322,7 +1196,6 @@ function showMenu() {
 	u = el({
 		'create':'a',
 		'style':'font-weight:bold;',
-		//'href':'https://sites.google.com/site/davidshumway/',
 		'href':'https://their.github.com/amt',
 		'target':'_blank'
 	});
@@ -2075,7 +1948,6 @@ function storage_events_listener(event) {
 	//
 	if (key == 'OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_' + SCRIPT_NAME) {
 		stopAcceptingJobs_run();
-		//~ stopAcceptingJobs_init();
 		return;
 	}
 	
@@ -2319,109 +2191,117 @@ function applySettings() {
 	
 	// IS_ACTIVE_RETURN_AND_ACCEPT (inside tools)
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT) {
-		
-		var i = document.body.innerHTML;
-		
 		/*
 		 * Job is returnable?
 		 * Job is returnable if one of these two links are on the page.
 		 */
 		if  (
-				/<a href="\/mturk\/return\?groupId=[^&]+/.exec(i) ||
-				/<a href="\/mturk\/return\?requesterId=[^&]+/.exec(i)
+			/^https?:\/\/(www\.)mturk.com\/mturk\/continue\?/i.exec(document.location.href) ||
+			/^https?:\/\/(www\.)mturk.com\/mturk\/return\?/i.exec(document.location.href) ||
+			/^https?:\/\/(www\.)mturk.com\/mturk\/preview\?/i.exec(document.location.href)
 			)
-		{
+			return;
+		// Return and accept
+		// Return link and group id
+		if  (
+				!/<a href="\/mturk\/return\?/.exec(document.body.innerHTML) ||
+				ih.indexOf('<input type="hidden" name="groupId" value="">') != -1 // Must have a group id
+			)
+		{	
+			return;
+		}
+		
+		var u;
+		var u2;
+		
+		/**
+		 * RETURN_AND_ACCEPT button
+		 * 
+		 * 5 Sep 2014, cursor:pointer
+		 */
+		u = el({
+				'create':'input',
+				'type':'button',
+				'style':'\
+					width:120px;\
+					height:24px;\
+					margin:0;\
+					padding:0;\
+					margin-left:4px;\
+					border-top:0;\
+					-moz-border-radius:0 0 4px 4px;\
+					border-radius:0 0 4px 4px;\
+					cursor:pointer;',
+						//radius->tl,tr,br,bl
+						//'style':'width:120px;height:26px;margin-left:4px;',
+				'id':SCRIPT_NAME+'btn_raa',
+				'value':'Return and Accept!'
+		});
+		tools.appendChild(u);
+		
+		/*
+		 * RETURN_AND_ACCEPT actions
+		 */
+		u.onclick = function() {
 			
-			var u;
-			var u2;
+			this.style.backgroundColor = 'LightGreen';
+			this.value = 'Returning Job';
+			
+			var url_return_and_accept;
+			var u = /<a href="\/mturk\/return\?[^"]+/.exec(document.body.innerHTML);
+			if (!u)
+				return;
+			url_return_and_accept = u[0];
+			url_return_and_accept = url_return_and_accept.replace('<a href="', 'https://www.mturk.com');
+			url_return_and_accept = url_return_and_accept.replace(/&amp;/g, '&');
 			
 			/**
-			 * RETURN_AND_ACCEPT button
 			 * 
-			 * 5 Sep 2014, cursor:pointer
+			 * XHR request for Firefox & Chrome.
+			 * Download and install.
+			 * 
 			 */
-			u = el({
-					'create':'input',
-					'type':'button',
-					'style':'\
-						width:120px;\
-						height:24px;\
-						margin:0;\
-						padding:0;\
-						margin-left:4px;\
-						border-top:0;\
-						-moz-border-radius:0 0 4px 4px;\
-						border-radius:0 0 4px 4px;\
-						cursor:pointer;',
-							//radius->tl,tr,br,bl
-							//'style':'width:120px;height:26px;margin-left:4px;',
-					'id':SCRIPT_NAME+'btn_raa',
-					'value':'Return and Accept!'
-			});
-			tools.appendChild(u);
-			
 			/*
-			 * RETURN_AND_ACCEPT actions
+			 * CHROME
 			 */
-			document.getElementById(SCRIPT_NAME+'btn_raa').onclick = function() {
-				
-				this.style.backgroundColor = 'LightGreen';
-				this.value = 'Returning Job';
-				
-				var u;
-				var url_return_and_accept;
-				
-				u = /<a href="\/mturk\/return\?[^"]+/.exec(document.body.innerHTML);
-				if (!u)
-					return;
-				url_return_and_accept = u[0];
-				url_return_and_accept = url_return_and_accept.replace('<a href="', 'https://www.mturk.com');
-				url_return_and_accept = url_return_and_accept.replace(/&amp;/g, '&');
-				
-				/**
-				 * 
-				 * XHR request for Firefox & Chrome.
-				 * Download and install.
-				 * 
-				 */
-				/*
-				 * CHROME
-				 */
-				if (!is_mozilla) {
-					GM_xmlhttpRequest({
-						method: 'GET',
-						url: url_return_and_accept,
-						onload: function (response) {
-							return_accept();
-						}
-					});
-				} 
-				/*
-				 * MOZILLA
-				 */
-				if (is_mozilla) {
-					self.port.on('xhr_returnaccept', function() {
+			if (!is_mozilla) {
+				GM_xmlhttpRequest({
+					method: 'GET',
+					url: url_return_and_accept,
+					onload: function (response) {
 						return_accept();
-					});
-					self.port.emit("xhr_returnaccept", url_return_and_accept);
-				}
-				/*
-				 * END MOZILLA
-				 */
-				
-				
-				function return_accept() {
-					// status
-					var u = document.getElementById(SCRIPT_NAME+'btn_raa');
-					u.value = 'Accepting New Job';
-					// get new
-					var gid;
-					gid = /<a href="\/mturk\/return\?groupId=([^&]+)/.exec(document.body.innerHTML);
-					if (gid) {
-						window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId='+gid[1];
-						u.style.backgroundColor = 'MintCream';
-					} else
-						u.value = 'Failed';
+					}
+				});
+			} 
+			/*
+			 * MOZILLA
+			 */
+			if (is_mozilla) {
+				self.port.on('xhr_returnaccept', function() {
+					return_accept();
+				});
+				self.port.emit('xhr_returnaccept', url_return_and_accept);
+			}
+			/*
+			 * END MOZILLA
+			 */
+			
+			function return_accept() {
+				var u, return_link, gid;
+				// status
+				u = document.getElementById(SCRIPT_NAME+'btn_raa');
+				u.value = 'Accepting New Job';
+				// get new
+				return_link = /<a href="\/mturk\/return\?([^"]+)/.exec(document.body.innerHTML);
+				if (!return_link) return;
+				return_link = return_link[1].replace(/&amp/g, '&');
+				// Gid
+				gid = /groupId=([^&]+)/.exec(return_link);
+				if (gid) {
+					window.location.href = 'https://www.mturk.com/mturk/previewandaccept?groupId='+gid[1];
+					u.style.backgroundColor = 'MintCream';
+				} else {
+					u.value = 'Failed';
 				}
 			}
 		}
