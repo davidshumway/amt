@@ -2201,20 +2201,12 @@ function applySettings() {
 function load()
 {
 	/**
-	 * When to run!
+	 * When to run.
+	 * The "tools" button and dialog is visible on all worker pages
+	 * (worker.mturk.com).
+	 * 
 	 */
-	// MT Home Page rather than Job!
-	// -There are currently no HITs assigned to you.
-	// -There are no more available HITs in this group. See more HITs available to you below.
-	// -All HITs( Available to You|) => Shows when logged out.
-	// ...
-	if  (
-		/<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(document.body.innerHTML)
-		)
-	{
-		return;
-	}
-
+	 
 	var u, t;
 	
 	/**
@@ -2282,17 +2274,31 @@ function load()
 	}
 	
 	/**
+	 * When to run.
+	 * The application of tool settings only occurs on task pages,
+	 * i.e. at pages matching https://worker.mturk.com/projects/.../tasks[...].
+	 * 
+	 * Add if necessary:
+	 * 		On continue task.
+	 * 		On no more tasks.
+	 * 			- There are currently no HITs assigned to you.
+	 * 			- There are no more available HITs in this group. See more HITs available to you below.
+	 * 		On logged out.
+	 * 
+	 */
+	if  (
+		//~ /<tr>[\r\n\t\s]+<td class="title_orange_text_bold">[\r\n\t\s]+All HITs( Available to You|)[\r\n\t\s]+&nbsp;&nbsp;[\r\n\t\s]+<\/td>[\r\n\t\s]+<\/tr>[\r\n\t\s]+<tr>[\r\n\t\s]+<td class="title_orange_text" style="white-space: nowrap; padding-top: 1ex;">[\r\n\t\s]+1-10 of \d+ Results/.exec(document.body.innerHTML)
+		!/^https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks/.exec(document.location.href)
+		)
+	{
+		return;
+	}
+	
+	/**
 	 * Apply tool settings
 	 * 
 	 */
 	applySettings();
-	
-	// NOT USING THIS
-	//~ /**
-	 //~ * Add background page listener for doNotAcceptNextTab
-	 //~ */
-	//~ stopAcceptingJobs_eventListener();
-	//~ OBJECT_MT_TOOLS_LOCAL_STORAGE
 }
 
 /**
