@@ -1186,20 +1186,32 @@ function showMenu() {
 	theMenu.appendChild(u);
 	
 	/**
-	 * Copy
-	 * 
+	 * Copyright
 	 */
 	theMenu.appendChild(document.createTextNode('© 2013-2017 '));
 	u = el({
 		'create':'a',
-		'style':'font-weight:bold;',
+		'style':'fontg-weight:bold;',
 		'href':'https://their.github.com/amt',
 		'target':'_blank'
 	});
 	u2 = 'David Shumway';
 	u.appendChild(document.createTextNode(u2));
 	theMenu.appendChild(u);
-	theMenu.appendChild(document.createTextNode(' and FLBS.'));
+	// and
+	theMenu.appendChild(document.createTextNode(' and '));
+	// flbs
+	u = el({
+		'create':'a',
+		'style':'font-weight:bold;',
+		'href':'http://fbiz.us/',
+		'target':'_blank'
+	});
+	u2 = 'FLBS';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	// period
+	theMenu.appendChild(document.createTextNode('.'));
 	
 	/**
 	 * Apply menu item actions 
