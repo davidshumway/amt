@@ -398,11 +398,12 @@ function showMenu() {
 		'.'+SCRIPT_NAME+'m1 {\
 			float:left;\
 			width:20%;\
-			height:22px;\
+			height:40px;\
 			padding:2px 0 2px;\
 			text-align:center;\
 			cursor:pointer;\
 			overflow:hidden;\
+			background-color:#fcfefc;\
 		}'
 	);
 	// m2
@@ -410,11 +411,12 @@ function showMenu() {
 		'.'+SCRIPT_NAME+'m2 {\
 			float:block;\
 			width:80%;\
-			height:18px;\
+			height:40px;\
 			padding:6px 0 2px;\
 			text-align:left;\
 			cursor:pointer;\
 			overflow:hidden;\
+			background-color:#fcfefc;\
 		}'
 	);
 	// m2 buttons, move upward, margin-top
@@ -439,11 +441,11 @@ function showMenu() {
 			top:8px;\
 			left:50%;\
 			margin-left:-280px;\
-			width:560px;\
-			height:540px;\
+			width:800px;\
+			height:680px;\
 			padding:0px 8px 0px 8px;\
 			z-index:10000;\
-			background-color:#fcfefc;\
+			background-color:#ececec;\
 			-moz-border-radius:4px;\
 			border-radius:4px;\
 			border:1px solid #444;\
