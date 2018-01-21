@@ -526,14 +526,6 @@ function showMenu() {
 			background-color:#eee;\
 		}'
 	);
-	//~ GM_addStyle( // turn_off_auto_accept
-		//~ '#'+SCRIPT_NAME+'turn_off_auto_accept:hover {\
-			//~ background-color:LightGreen;\
-		//~ }'
-	//~ );
-	
-	// Menu fader
-	// xx
 	
 	/**
 	 * Div containers
@@ -1832,6 +1824,127 @@ function storage_events_listener(event) {
 	
 }
 /**
+ * Function modifyIframe
+ * 
+ */
+function modifyIframe(el_iframe) {
+	
+	var div_iframe = el_iframe.parentNode;
+	
+	if (!div_iframe) return;
+	
+	div_iframe.style.zIndex = 1;
+	
+	// IFRAME_HEIGHT
+	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT) {
+		div_iframe.style.height = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT + 'px';
+		div_iframe.style.backgroundColor = '#fff'; // iframe transparency
+	}
+	
+	/**
+	 * IFRAME_WIDTH
+	 * IS_ACTIVE_IFRAME_WIDTH
+	 * Change the width of the iframe to full width.
+	 * 		Change certain elements in the body to the width of the page,
+	 * 		as they currently overflow to the right of the page.
+	 **/
+	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH) {
+		GM_addStyle('#MainContent, #MainContent.div {margin: 0 !important; padding: 0 !important;}');
+		GM_addStyle('#MainContent.hr,.footer-horizontal-rule,.row,.task-preview {\
+			margin: 0 !important;\
+			margin-right: 0 !important;\
+			margin-left: 0 !important;\
+			padding: 0 !important;}');
+	}
+	
+	// IFRAME_OFFSET_TOP (this is turned off in preview)
+	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET) {
+		var s1,s2,s3,s4;
+		s1 = 'In order to accept your next HIT, please type this word into the text box below';
+		s2 = 'you were viewing could not be accepted';
+		s3 = 'The HIT you were viewing has expired';
+		s4 = 'Want to work on this HIT?';
+		if  (
+			// Do not move window when in preview mode. The one exception is when in "continue". Then check innerHTML for "Finished with this HIT?".
+			//
+			//
+			/<td align="center" nowrap[^>]*>Finished with this HIT\?<\/td>/.exec(document.body.innerHTML) &&
+			
+			document.body.innerHTML.indexOf(s1) == -1 &&
+			document.body.innerHTML.indexOf(s2) == -1 &&
+			document.body.innerHTML.indexOf(s3) == -1 &&
+			document.body.innerHTML.indexOf(s4) == -1
+			)
+		{
+			var i = document.getElementsByName('HTMLQuestionIFrame');
+			if (!i || !i.length) {
+				i = document.getElementsByName('ExternalQuestionIFrame');
+			}
+			if (i[0]) {
+				i[0].style.position = 'absolute';
+				i[0].style.backgroundColor = '#fff'; // iframe transparency
+				i[0].style.top = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP + 'px';
+				//
+				// Frame is altered. Display [x] to reset.
+				var img_reset64;
+				var u;
+				img_reset64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAA\
+				ACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3QoNFCY6xFM0FwAABcFJRE\
+				FUOMtllVtsXEcZx39zbrveXV9ix971PZfacexEaZOQKgEpgobSxElT0pe0VaFCfkACRIVUygPpA0IginhoBYgqKu\
+				KFtgj1oXVSgUQrFYqiVGqIi2O7qZMmqW9J9uaz5\
+				+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';
+				u = el({//original 24x24
+						'create':'img',
+						'style':'width:20px;height:20px;margin:0;padding:0;margin-right:4px;vertical-align:middle;cursor:pointer;zoom:0.8em;',
+						'src':img_reset64,
+						'id':SCRIPT_NAME+'btn_reset_once_iframe',
+						'alt':'Move <iframe> job window to original location?',
+						'title':'Move <iframe> job window to original location?'
+				});
+				u.onclick = function() {
+					this.style.cursor = '';
+					this.onclick = function() {
+						return false;
+					}
+					var i = document.getElementsByName('HTMLQuestionIFrame');
+					if (!i || !i.length) {
+						i = document.getElementsByName('ExternalQuestionIFrame');
+					}
+					if (i[0]) {
+						i[0].style.position = '';
+						i[0].style.top = '';
+					}
+					// remove this
+					this.parentNode.removeChild(this);
+				}
+				tools.insertBefore(u, tools.firstChild);
+			}
+		}
+	}
+}
+/**
  * Function applySettings
  * 
  */
@@ -1849,13 +1962,9 @@ function applySettings() {
 	}
 	
 	// Always set a local storage listener.
-	//
-	//
 	window.addEventListener("storage", storage_events_listener, false);
 	
 	// Set a variable for CAPTCHA status. This is boolean.
-	//
-	//
 	var captcha;
 	
 	/**
@@ -1934,112 +2043,9 @@ function applySettings() {
 	 * 		the iframe. The iframe selector is now
 	 * 		"iframe.embed-responsive-item".
 	 */
-	var div_iframe = document.querySelector('iframe.embed-responsive-item').parentNode;
-	if (div_iframe) {
-		div_iframe.style.zIndex = 1;
-	}
-	
-	// IFRAME_HEIGHT
-	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT) {
-		div_iframe.style.height = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT + 'px';
-		div_iframe.style.backgroundColor = '#fff'; // iframe transparency
-	}
-	
-	// IFRAME_WIDTH
-	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH) {
-		GM_addStyle('#MainContent, #MainContent.div {margin: 0 !important; padding: 0 !important;}');
-		GM_addStyle('#MainContent.hr,\
-			.footer-horizontal-rule,\
-			.row\
-			{margin: 0 !important;margin-right: 0 !important;margin-left: 0 !important; padding: 0 !important;}'
-		);
-	}
-	
-	// IFRAME_OFFSET_TOP (this is turned off in preview)
-	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET) {
-		var s1,s2,s3,s4;
-		s1 = 'In order to accept your next HIT, please type this word into the text box below';
-		s2 = 'you were viewing could not be accepted';
-		s3 = 'The HIT you were viewing has expired';
-		s4 = 'Want to work on this HIT?';
-		if  (
-			// Do not move window when in preview mode. The one exception is when in "continue". Then check innerHTML for "Finished with this HIT?".
-			//
-			//
-			/<td align="center" nowrap[^>]*>Finished with this HIT\?<\/td>/.exec(document.body.innerHTML) &&
-			
-			document.body.innerHTML.indexOf(s1) == -1 &&
-			document.body.innerHTML.indexOf(s2) == -1 &&
-			document.body.innerHTML.indexOf(s3) == -1 &&
-			document.body.innerHTML.indexOf(s4) == -1
-			)
-		{
-			var i = document.getElementsByName('HTMLQuestionIFrame');
-			if (!i || !i.length) {
-				i = document.getElementsByName('ExternalQuestionIFrame');
-			}
-			if (i[0]) {
-				i[0].style.position = 'absolute';
-				i[0].style.backgroundColor = '#fff'; // iframe transparency
-				i[0].style.top = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP + 'px';
-				//
-				// Frame is altered. Display [x] to reset.
-				var img_reset64;
-				var u;
-				img_reset64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAA\
-				ACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3QoNFCY6xFM0FwAABcFJRE\
-				FUOMtllVtsXEcZx39zbrveXV9ix971PZfacexEaZOQKgEpgobSxElT0pe0VaFCfkACRIVUygPpA0IginhoBYgqKu\
-				KFtgj1oXVSgUQrFYqiVGqIi2O7qZMmqW9J9uaz5\
-				+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';
-				u = el({//original 24x24
-						'create':'img',
-						'style':'width:20px;height:20px;margin:0;padding:0;margin-right:4px;vertical-align:middle;cursor:pointer;',
-						'src':img_reset64,
-						'id':SCRIPT_NAME+'btn_reset_once_iframe',
-						'alt':'Move <iframe> job window to original location?',
-						'title':'Move <iframe> job window to original location?'
-				});
-				u.onclick = function() {
-					this.style.cursor = '';
-					this.onclick = function() {
-						return false;
-					}
-					var i = document.getElementsByName('HTMLQuestionIFrame');
-					if (!i || !i.length) {
-						i = document.getElementsByName('ExternalQuestionIFrame');
-					}
-					if (i[0]) {
-						i[0].style.position = '';
-						i[0].style.top = '';
-					}
-					// remove this
-					this.parentNode.removeChild(this);
-				}
-				tools.insertBefore(u, tools.firstChild);
-			}
-		}
+	var iframe = document.querySelector('iframe.embed-responsive-item');
+	if (iframe) {
+		modifyIframe(iframe);
 	}
 	
 	// IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT
