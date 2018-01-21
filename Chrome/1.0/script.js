@@ -1479,7 +1479,7 @@ function showMenu_applyActions() {
  * Function updateSettings
  * 
  */
-function updateSettings(resetSettings) { // rs--false/1/2
+function updateSettings(resetSettings) {
 	
 	var u;
 	var btn;
@@ -1846,7 +1846,6 @@ function applySettings() {
 		)
 	{
 		globals.original_title = document.title;
-		
 	}
 	
 	// Always set a local storage listener.
@@ -1921,45 +1920,35 @@ function applySettings() {
 	}
 	
 	/**
+	 * Iframe
+	 * 
 	 * Iframe z-index
-	 * May 15, 2016
-	 * Iframe z-index in Chrome must be 1 now. Otherwise,
-	 * parts of the page sometimes appear above the iframe. 
+	 * 		May 15, 2016
+	 * 		Iframe z-index in Chrome must be 1 now. Otherwise,
+	 * 		parts of the page sometimes appear above the iframe. 
+	 * 
+	 * Iframe selector
+	 * 		January, 2018
+	 * 		This changed from selecting the iframe via (HTMLQuestionIFrame
+	 * 		or ExternalQuestionIFrame) to selecting the div containing 
+	 * 		the iframe. The iframe selector is now
+	 * 		"iframe.embed-responsive-item".
 	 */
-	var i = document.getElementsByName('HTMLQuestionIFrame');
-	if (!i || !i[0]) {
-		i = document.getElementsByName('ExternalQuestionIFrame');
+	var div_iframe = document.querySelector('iframe.embed-responsive-item').parentNode;
+	if (div_iframe) {
+		div_iframe.style.zIndex = 1;
 	}
-	if (i && i[0]) {
-		i[0].style.zIndex = 1;
-	}
+	
 	// IFRAME_HEIGHT
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT) {
-		var i = document.getElementsByName('HTMLQuestionIFrame');
-		if (!i || !i[0]) {
-			i = document.getElementsByName('ExternalQuestionIFrame');
-		}
-		if (i && i[0]) {
-			i[0].style.height = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT + 'px';
-			i[0].style.backgroundColor = '#fff'; // iframe transparency
-		}
+		div_iframe.style.height = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT + 'px';
+		div_iframe.style.backgroundColor = '#fff'; // iframe transparency
 	}
 	
 	// IFRAME_WIDTH
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH) {
-		document.body.style.margin = '0';
-		var i = document.getElementsByName('HTMLQuestionIFrame');
-		if (!i || !i[0]) {
-			i = document.getElementsByName('ExternalQuestionIFrame');
-		}
-		if (i && i[0]) {
-			i[0].style.position = 'absolute';
-			i[0].style.width = '100%';
-			i[0].style.margin = '0'; // no margin
-			i[0].style.borderLeft = '0'; // remove left/right border
-			i[0].style.borderRight = '0';
-			i[0].style.backgroundColor = '#fff'; // iframe transparency
-		}
+		GM_addStyle('div {margin: 0 !important; padding: 0 !important;}');
+		GM_addStyle('hr {margin: 0 !important; padding: 0 !important;}');
 	}
 	
 	// IFRAME_OFFSET_TOP (this is turned off in preview)
@@ -2201,7 +2190,6 @@ function applySettings() {
  */	
 function load()
 {
-	console.log('xxx');
 	/**
 	 * When to run!
 	 */
