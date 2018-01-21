@@ -1189,7 +1189,7 @@ function showMenu() {
 	 * Copy
 	 * 
 	 */
-	theMenu.appendChild(document.createTextNode('© 2013 '));
+	theMenu.appendChild(document.createTextNode('© 2013-2017 '));
 	u = el({
 		'create':'a',
 		'style':'font-weight:bold;',
