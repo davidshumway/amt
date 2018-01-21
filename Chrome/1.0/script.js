@@ -1947,8 +1947,12 @@ function applySettings() {
 	
 	// IFRAME_WIDTH
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH) {
-		GM_addStyle('div {margin: 0 !important; padding: 0 !important;}');
-		GM_addStyle('hr {margin: 0 !important; padding: 0 !important;}');
+		GM_addStyle('#MainContent, #MainContent.div {margin: 0 !important; padding: 0 !important;}');
+		GM_addStyle('#MainContent.hr,\
+			.footer-horizontal-rule,\
+			.row\
+			{margin: 0 !important;margin-right: 0 !important;margin-left: 0 !important; padding: 0 !important;}'
+		);
 	}
 	
 	// IFRAME_OFFSET_TOP (this is turned off in preview)
