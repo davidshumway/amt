@@ -442,7 +442,7 @@ function showMenu() {
 			left:50%;\
 			margin-left:-280px;\
 			width:800px;\
-			height:680px;\
+			height:740px;\
 			padding:0px 8px 0px 8px;\
 			z-index:10000;\
 			background-color:#ececec;\
@@ -1193,7 +1193,7 @@ function showMenu() {
 	theMenu.appendChild(document.createTextNode('© 2013-2017 '));
 	u = el({
 		'create':'a',
-		'style':'fontg-weight:bold;',
+		'style':'font-weight:bold;',
 		'href':'https://their.github.com/amt',
 		'target':'_blank'
 	});
