@@ -1,5 +1,5 @@
 /**
- * Copyright David Shumway 2013-2015 and FLBS.
+ * Copyright 2013-2015 David Shumway and FLBS.
  * Contact: davidshumway@gmail.com
  * 
  */
@@ -333,7 +333,7 @@ function enterKeyEventListener(element) {
 /**
  * function stopAcceptingJobs_run
  */
-function stopAcceptingJobs_run() {//alert('a');
+function stopAcceptingJobs_run() {
 	var autoAcceptTB = document.getElementsByName('autoAcceptEnabled');
 	if(autoAcceptTB && autoAcceptTB.length) {
 		autoAcceptTB = autoAcceptTB[0];
@@ -1948,7 +1948,6 @@ function storage_events_listener(event) {
 	//
 	if (key == 'OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_' + SCRIPT_NAME) {
 		stopAcceptingJobs_run();
-		//~ stopAcceptingJobs_init();
 		return;
 	}
 	
@@ -2092,7 +2091,11 @@ function applySettings() {
 		s3 = 'The HIT you were viewing has expired';
 		s4 = 'Want to work on this HIT?';
 		if  (
-			document.location.href.indexOf('https://www.mturk.com/mturk/preview?') == -1 &&
+			// Do not move window when in preview mode. The one exception is when in "continue". Then check innerHTML for "Finished with this HIT?".
+			//
+			//
+			/<td align="center" nowrap[^>]*>Finished with this HIT\?<\/td>/.exec(document.body.innerHTML) &&
+			
 			document.body.innerHTML.indexOf(s1) == -1 &&
 			document.body.innerHTML.indexOf(s2) == -1 &&
 			document.body.innerHTML.indexOf(s3) == -1 &&

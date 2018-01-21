@@ -31,6 +31,8 @@ There are no guarantees made regarding the safety of using this extension on Ama
 
 Version History:
 
+1.1.2 -- Move iframe to offset when in "continue" mode but URL is "/preview". Ensures to not move to offset when actually in "preview" mode.
+
 1.1.1 -- Update styles. Add support for workersandbox.mturk.com.
 
 1.1.0 -- Fix to match changed "return task" elements at mturk.com.
@@ -47,4 +49,4 @@ Version History:
 
 1.0.3 -- Note: A change in this version makes it necessary to re-enable "Allow in incognito". Add http://pastebin.com/raw.php?i=14R5zCYR to include_globs.  Turn on some settings by default for Incognito use and/or a first-time user (Height/Width, CAPTCHA focus, CAPTCHA audio/visual alert). Small layout changes (select field focus fix). Plays an audio alert in same tab 50 seconds after last audio alert (new), in a new tab 30 seconds after last audio alert (old), replay audio alert in same tab after 60 seconds (new). Remove "key" from manifest requires user to click check box for "Allow in Incognito".
 
-Last Updated: June 20, 2015
+Last Updated: June 24, 2015

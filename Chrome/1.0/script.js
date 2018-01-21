@@ -1,6 +1,7 @@
 /**
- * Copyright David Shumway 2013-2015 and FLBS.
- * Contact: davidshumway@gmail.com
+ * Copyright David Shumway 2013-2017 and FLBS.
+ * License: GPLv3.
+ * Contact: david.shumway@gmail.com, david@flbs.biz
  * 
  */
 // Firefox UID: {1a88e21f-76fc-450c-826b-8e62fd58ba0d}
@@ -47,8 +48,6 @@ var tools;
 var INTV_blink__sr_status = true;
 
 // Global vars object.
-//
-//
 var globals = {
 	original_title: null, // This is what the title is before changing to "CAPTCHA" (if CAPTCHA notification is turned on).
 	c_phrase: 'In order to accept your next HIT, please type this word into the text box below' // Shows on pages where there is a CAPTCHA
@@ -374,13 +373,13 @@ function hideMenu() {
 function showMenu() {
 	
 	// Some vars for scope of this function only.
-	var t;
-	var theMenu;
-	var u;
-	var u2;
-	var u3;
-	var x;
-	var img_info64;
+	var t,
+		theMenu,
+		u,
+		u2,
+		u3,
+		x,
+		img_info64;
 	
 	// info image
 	// size of original image is 20x20
@@ -406,8 +405,6 @@ function showMenu() {
 			overflow:hidden;\
 		}'
 	);
-		//padding-top:4px;height:22px;\
-		//padding-bottom:4px;
 	// m2
 	GM_addStyle(
 		'.'+SCRIPT_NAME+'m2 {\
@@ -445,7 +442,7 @@ function showMenu() {
 			width:560px;\
 			height:540px;\
 			padding:0px 8px 0px 8px;\
-			z-index:1001;\
+			z-index:10000;\
 			background-color:#fcfefc;\
 			-moz-border-radius:4px;\
 			border-radius:4px;\
@@ -461,7 +458,7 @@ function showMenu() {
 			left:0;\
 			width:100%;\
 			height:100%;\
-			z-index:1000;\
+			z-index:10000;\
 			background-color:#000;\
 			opacity:0.4;\
 			filter:alpha(opacity=40);\
@@ -1388,134 +1385,6 @@ function showMenu_applyActions() {
 		play_audio(this.value); // Random or 0..6
 	}
 	
-	// Remove this.
-	// This is the hi def. install and removal
-	// functionality.
-	//~ /*
-	 //~ * 
-	 //~ * Audio snippet hi def. remove
-	 //~ * 
-	 //~ */
-	//~ if (document.getElementById(SCRIPT_NAME+'audio_hi_def_remove')) {
-		//~ document.getElementById(SCRIPT_NAME+'audio_hi_def_remove').onclick = function() {
-			//~ 
-			//~ this.value = 'Removing ...';
-			//~ 
-			//~ // disable
-			//~ this.disabled = true;
-			//~ document.getElementById(SCRIPT_NAME+'audio_hi_def_remove').onclick = function() {};
-			//~ 
-			//~ GM_setValue('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME, '');
-//~ 
-			//~ window.setTimeout(function() {
-				//~ var u;
-				//~ u = document.getElementById(SCRIPT_NAME+'audio_hi_def_remove');
-				//~ if (u) {
-					//~ if  (
-						//~ GM_getValue( 'OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME) == '' ||
-						//~ !GM_getValue('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME)
-						//~ )
-					//~ {
-						//~ u.value = 'Successful!';
-						//~ OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_USING_HI_DEF = false; // update local storage
-						//~ /*
-						 //~ * Update Settings
-						 //~ */
-						//~ updateSettings();
-					//~ } else {
-						//~ u.value = 'There was an error! Please try again.';
-					//~ }
-				//~ }
-			//~ }, 2000); // wait 2 seconds to be sure data is cleared
-		//~ }
-	//~ }
-	//~ 
-	//~ /*
-	 //~ * 
-	 //~ * Audio snippet hi def. install
-	 //~ * 
-	 //~ */
-	//~ if (document.getElementById(SCRIPT_NAME+'audio_hi_def_install')) {
-		//~ document.getElementById(SCRIPT_NAME+'audio_hi_def_install').onclick = function() {
-			//~ 
-			//~ this.value = 'Downloading ...';
-			//~ 
-			//~ // disable
-			//~ this.disabled = true;
-			//~ document.getElementById(SCRIPT_NAME+'audio_hi_def_install').onclick = function() {};
-			//~ 
-			//~ /**
-			 //~ * 
-			 //~ * XHR request for Firefox & Chrome.
-			 //~ * Download and install.
-			 //~ * 
-			 //~ */
-			//~ /*
-			 //~ * CHROME
-			 //~ */
-			//~ if (!is_mozilla) {
-				//~ GM_xmlhttpRequest({
-					//~ method: 'GET',
-					//~ url: URL_PASTEBIN,
-					//~ onload: function (response) {
-						//~ install_audio(response.responseText);
-					//~ }
-				//~ });
-			//~ }
-			//~ /*
-			 //~ * END CHROME
-			 //~ */
-			//~ /*
-			 //~ * MOZILLA
-			 //~ */
-			//~ if (is_mozilla) {
-				//~ self.port.on('xhr_pastebin', function(responseText) {
-					//~ install_audio(responseText);
-				//~ });
-				//~ self.port.emit("xhr_pastebin", URL_PASTEBIN);
-			//~ }
-			//~ /*
-			 //~ * END MOZILLA
-			 //~ */
-			//~ function install_audio(result) {
-				//~ var ahdi;
-				//~ var r;
-				//~ //var result = response.responseText;
-				//~ 
-				//~ ahdi = document.getElementById(SCRIPT_NAME+'audio_hi_def_install');
-				//~ if (ahdi) {
-					//~ ahdi.value = 'Installing ...';
-				//~ }
-				//~ 
-				//~ // check integrity of download
-				//~ r = /^\[(('data:audio\/[^;]+;base64,[^']+',?)*?(?=\]))\]$/.exec(result); // X instances "'data:audio/ogg;base64,DATA',"
-				//~ if (!r) {
-					//~ if (ahdi) {
-						//~ ahdi.value = 'There was an error! Please try again.';
-					//~ }
-					//~ return;
-				//~ }
-				//~ 
-				//~ GM_setValue('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME, result);
-				//~ 
-				//~ if (ahdi) {
-					//~ if (GM_getValue('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME) != result)
-						//~ ahdi.value = 'There was an error! Please try again.';
-					//~ else
-						//~ ahdi.value = 'Installation successful!';
-				//~ }
-				//~ 
-				//~ if (GM_getValue('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME) == result) {
-					//~ OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_USING_HI_DEF = true; // update local storage
-					//~ /*
-					 //~ * Update Settings
-					 //~ */
-					//~ updateSettings();
-				//~ }
-			//~ }
-		//~ }
-	//~ }
-	
 	/*
 	 * 
 	 * Show info
@@ -1589,9 +1458,6 @@ function showMenu_applyActions() {
 		localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = false;
 		// Run
 		stopAcceptingJobs_run();
-		
-		//~ console.log('Clicked turn_off_auto_accept');
-		//~ stopAcceptingJobs_init();
 	}
 }
 
@@ -1630,7 +1496,6 @@ function updateSettings(resetSettings) { // rs--false/1/2
 		}
 		//document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP').value = '20';
 	}
-	
 	
 	// IS_ACTIVE_IFRAME_HEIGHT
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_HEIGHT');
@@ -2040,25 +1905,27 @@ function applySettings() {
 			
 		}
 	}
-	// OLD
-	//~ /*
-	 //~ * Save local storage
-	 //~ */
-	//~ var u = JSON.stringify(OBJECT_MT_TOOLS_LOCAL_STORAGE);
-	//~ GM_setValue('OBJECT_MT_TOOLS_LOCAL_STORAGE'+SCRIPT_NAME, u);
-	//~ /*
-	 //~ * Save local storage
-	 //~ */
-	//~ var u = JSON.stringify(OBJECT_MT_TOOLS_LOCAL_STORAGE);
-	//~ GM_setValue('OBJECT_MT_TOOLS_LOCAL_STORAGE'+SCRIPT_NAME, u);
 	
+	/**
+	 * Iframe z-index
+	 * May 15, 2016
+	 * Iframe z-index in Chrome must be 1 now. Otherwise,
+	 * parts of the page sometimes appear above the iframe. 
+	 */
+	var i = document.getElementsByName('HTMLQuestionIFrame');
+	if (!i || !i[0]) {
+		i = document.getElementsByName('ExternalQuestionIFrame');
+	}
+	if (i && i[0]) {
+		i[0].style.zIndex = 1;
+	}
 	// IFRAME_HEIGHT
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT) {
 		var i = document.getElementsByName('HTMLQuestionIFrame');
 		if (!i || !i[0]) {
 			i = document.getElementsByName('ExternalQuestionIFrame');
 		}
-		if (i[0]) {
+		if (i && i[0]) {
 			i[0].style.height = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT + 'px';
 			i[0].style.backgroundColor = '#fff'; // iframe transparency
 		}
@@ -2071,15 +1938,13 @@ function applySettings() {
 		if (!i || !i[0]) {
 			i = document.getElementsByName('ExternalQuestionIFrame');
 		}
-		if (i) {
-			if (i[0]) {
-				i[0].style.position = 'absolute';
-				i[0].style.width = '100%';
-				i[0].style.margin = '0'; // no margin
-				i[0].style.borderLeft = '0'; // remove left/right border
-				i[0].style.borderRight = '0';
-				i[0].style.backgroundColor = '#fff'; // iframe transparency
-			}
+		if (i && i[0]) {
+			i[0].style.position = 'absolute';
+			i[0].style.width = '100%';
+			i[0].style.margin = '0'; // no margin
+			i[0].style.borderLeft = '0'; // remove left/right border
+			i[0].style.borderRight = '0';
+			i[0].style.backgroundColor = '#fff'; // iframe transparency
 		}
 	}
 	
@@ -2091,7 +1956,11 @@ function applySettings() {
 		s3 = 'The HIT you were viewing has expired';
 		s4 = 'Want to work on this HIT?';
 		if  (
-			document.location.href.indexOf('https://www.mturk.com/mturk/preview?') == -1 &&
+			// Do not move window when in preview mode. The one exception is when in "continue". Then check innerHTML for "Finished with this HIT?".
+			//
+			//
+			/<td align="center" nowrap[^>]*>Finished with this HIT\?<\/td>/.exec(document.body.innerHTML) &&
+			
 			document.body.innerHTML.indexOf(s1) == -1 &&
 			document.body.innerHTML.indexOf(s2) == -1 &&
 			document.body.innerHTML.indexOf(s3) == -1 &&
@@ -2318,7 +2187,7 @@ function applySettings() {
  */	
 function load()
 {
-
+	console.log('xxx');
 	/**
 	 * When to run!
 	 */
@@ -2334,14 +2203,15 @@ function load()
 		return;
 	}
 
-	var u;
-	var t;
+	var u, t;
 	
 	/**
-	 * Styles
+	 * Style for div_tools.
+	 * Container for initial menu buttons.
+	 * Update: Jan2018
+	 * 		The z-index on the site requires at least 10000.
+	 * 		Previously, it required only 100.
 	 */
-	// div_tools
-	// Container for initial menu buttons
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'div_tools {\
 			position:absolute;\
@@ -2350,12 +2220,15 @@ function load()
 			margin-left:-130px;\
 			width:260px;\
 			padding:0;\
-			z-index:100;\
+			z-index:10000;\
 			text-align:center;\
 		}'
-	); // hidden container = 120px(ra),60px(label),24px(reset)
-	// btn_show_menu
-	// Click shows tools.
+	);
+	
+	/**
+	 * Style for btn_show_menu.
+	 * Click shows tools.
+	 */
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'btn_show_menu {\
 			width:60px;\
@@ -2373,8 +2246,8 @@ function load()
 	 * Top of page container for tool buttons
 	 */
 	u = el({
-			'create':'div',
-			'id':SCRIPT_NAME+'div_tools'
+		'create':'div',
+		'id':SCRIPT_NAME+'div_tools'
 	});
 	document.body.appendChild(u);
 	tools = document.getElementById(SCRIPT_NAME+'div_tools');
@@ -2383,10 +2256,10 @@ function load()
 	 * btn_show_menu
 	 */
 	u = el({
-			'create':'input',
-			'type':'button',
-			'value':'Tools',
-			'id':SCRIPT_NAME+'btn_show_menu'
+		'create':'input',
+		'type':'button',
+		'value':'Tools',
+		'id':SCRIPT_NAME+'btn_show_menu'
 	});
 	tools.appendChild(u);
 	u.onclick = function() {
