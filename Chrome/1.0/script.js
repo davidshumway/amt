@@ -1850,11 +1850,14 @@ function modifyIframe(el_iframe) {
 	 **/
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH) {
 		GM_addStyle('#MainContent, #MainContent.div {margin: 0 !important; padding: 0 !important;}');
-		GM_addStyle('#MainContent.hr,.footer-horizontal-rule,.row,.task-preview {\
+		GM_addStyle('#MainContent.hr,#MainContent.row,#MainContent.task-preview,.footer-horizontal-rule {\
 			margin: 0 !important;\
 			margin-right: 0 !important;\
 			margin-left: 0 !important;\
 			padding: 0 !important;}');
+		// This is necessary to keep the window from overflowing on the
+		// right side.
+		GM_addStyle('.row {margin-right: 0 !important;}');
 	}
 	
 	// IFRAME_OFFSET_TOP (this is turned off in preview)
@@ -2213,19 +2216,20 @@ function load()
 	 * Style for div_tools.
 	 * Container for initial menu buttons.
 	 * Update: Jan2018
-	 * 		The z-index on the site requires at least 10000.
+	 * 		1) The z-index on the site requires at least 10000.
 	 * 		Previously, it required only 100.
+	 * 		2) Change from centered to showing on the right side of 
+	 * 		page.
 	 */
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'div_tools {\
 			position:absolute;\
 			top:0;\
-			left:50%;\
-			margin-left:-130px;\
-			width:260px;\
+			left:0;\
+			width:100%;\
 			padding:0;\
 			z-index:10000;\
-			text-align:center;\
+			text-align:right;\
 		}'
 	);
 	
@@ -2262,7 +2266,7 @@ function load()
 	u = el({
 		'create':'input',
 		'type':'button',
-		'value':'Tools',
+		'value':'FLBS',
 		'id':SCRIPT_NAME+'btn_show_menu'
 	});
 	tools.appendChild(u);
