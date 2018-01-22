@@ -316,9 +316,7 @@ function sanitize(obj) {
 }
 /**
  * function enterKeyEventListener
- * 
- * If key == 13 then save the form
- * and hide/exit the menu.
+ * If key == 13 then save the form and hide/exit the menu.
  */
 function enterKeyEventListener(element) {
 	element.addEventListener('keypress', function(e) {
@@ -371,8 +369,7 @@ function hideMenu() {
  * 
  */
 function showMenu() {
-	
-	// Some vars for scope of this function only.
+
 	var t,
 		theMenu,
 		u,
@@ -1214,7 +1211,7 @@ function showMenu() {
 	showMenu_applyActions();
 }
 /**
- * Function showMenu_applyActions
+ * function showMenu_applyActions
  * 
  */
 function showMenu_applyActions() {
@@ -1468,7 +1465,7 @@ function showMenu_applyActions() {
 }
 
 /**
- * Function updateSettings
+ * function updateSettings
  * 
  */
 function updateSettings(resetSettings) {
@@ -1591,7 +1588,7 @@ function updateSettings(resetSettings) {
 }
 
 /**
- * Function saveLocalStorage
+ * function saveLocalStorage
  * 
  */
 function saveLocalStorage() {
@@ -1604,7 +1601,8 @@ function saveLocalStorage() {
  * function events_listener_captcha
  * 
  * This function will only fire once per CAPTCHA session.
- * That is, only once across all tabs which 
+ * 
+ * Decription: Fires only once across all tabs which have a CAPTCHA.
  */
 function events_listener_captcha() {
 	
@@ -1719,11 +1717,15 @@ function events_listener_captcha() {
 /**
  * function checkPlayCaptchaAudio
  * 
- * Get localStorage latest.
- * Only play audio alert if:
- *  A) Localstorage.CAPTCHA_IS_PRESENT
- *   and
- *  B) Captcha is in this tab (.indexOf(globals.c_phrase))
+ * Checks whether to re-play CAPTCHA audio alert during CAPTCHA.
+ *
+ * Strategy: 
+ * 		Every ten seconds, check localStorage value that defines time
+ * 		when last audio alert was played.
+ * 		Only play audio alert when:
+ * 			A) Localstorage.CAPTCHA_IS_PRESENT; and
+ *			B) Captcha is in this tab (.indexOf(globals.c_phrase)); and
+ * 			C) Time since last alert has been at least sixty seconds.
  */
 function checkPlayCaptchaAudio() {
 	
@@ -1783,8 +1785,6 @@ function checkPlayCaptchaAudio() {
 			OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET
 		);
 		
-	} else {
-	
 	}
 	
 	// Set 10s timeout.
@@ -1793,17 +1793,21 @@ function checkPlayCaptchaAudio() {
 /**
  * function storage_events_listener
  * 
- * This is turned on when:
- * A) When the keys .IS_ACTIVE_CAPTCHA_DISPLAY_ALERT or .IS_ACTIVE_CAPTCHA_AUDIO_ALERT are enabled.
- * B) When the "Disable checked" button appears on page.
+ * Events listener to monitor changes to localStorage.
  * 
- * @key @newValue @oldValue @url @storageArea
+ * Decription:
+ * 		This is turned on when:
+ * 			A) When the keys .IS_ACTIVE_CAPTCHA_DISPLAY_ALERT or .IS_ACTIVE_CAPTCHA_AUDIO_ALERT are enabled.
+ * 			B) When the "Disable checked" button appears on page.
+ * 		Turned on via an event listener in this script which is 
+ * 		listening for "storage" events.
+ * 
+ * @param:	event
+ * 			An object containing the values:
+				@key @newValue @oldValue @url @storageArea
  * 
  */
 function storage_events_listener(event) {
-	
-	// Testing
-	//~ console.log(event);
 	
 	var key = event.key;
 	
@@ -1821,7 +1825,6 @@ function storage_events_listener(event) {
 		stopAcceptingJobs_run();
 		return;
 	}
-	
 }
 /**
  * Function modifyIframe
@@ -2069,7 +2072,6 @@ function applySettings() {
 				window.setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 1000);
 				window.setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 2000);
 				window.setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 3000);
-				//~ window.setTimeout(function(){document.getElementsByName("userCaptchaResponse")[0].focus();}, 4000);
 			}
 		}
 	}
@@ -2196,8 +2198,9 @@ function applySettings() {
 
  
 /**
- * Function load
- * Init
+ * function load
+ * 
+ * Initialize the script.
  * 
  * @global : tools = element
  */	
@@ -2239,15 +2242,26 @@ function load()
 	 */
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'btn_show_menu {\
-			width:60px;\
+			width:90px;\
+			height:45px;\
 			margin:0;\
 			padding:0;\
-			margin-top:-1px;\
-			-moz-border-radius:0 0 4px 4px;\
-			border-radius:0 0 4px 4px;\
-			\
+			border:0;\
 			cursor:pointer;\
+			background:url(\'data:image/png;base64,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\')\
 		}'
+		
+		
+		//~ '#'+SCRIPT_NAME+'btn_show_menu {\
+			//~ width:60px;\
+			//~ margin:0;\
+			//~ padding:0;\
+			//~ margin-top:-1px;\
+			//~ -moz-border-radius:0 0 4px 4px;\
+			//~ border-radius:0 0 4px 4px;\
+			//~ \
+			//~ cursor:pointer;\
+		//~ }'
 	);
 	
 	/**
@@ -2266,7 +2280,7 @@ function load()
 	u = el({
 		'create':'input',
 		'type':'button',
-		'value':'FLBS',
+		'value':'', //FLBS
 		'id':SCRIPT_NAME+'btn_show_menu'
 	});
 	tools.appendChild(u);
@@ -2376,40 +2390,10 @@ function audio_snippets_data(return_index, return_snippet) {
 		return 'audio/' + as[return_snippet].id
 		
 	}
-	
-	// OLD
-	//~ // Return snippet # (in-script)
-	//~ switch (return_snippet) {
-		//~ case 0:
-			//~ return 'audio/156090__marcolo91__bell-in-catalunya-square-barcelona.ogg';// 
-		//~ case 1:
-			//~ return 'audio/24624__anamorphosis__gmb-kantilan-4.ogg';
-		//~ case 2:
-			//~ return 'audio/';
-		//~ case 3:
-			//~ return 'audio/';
-		//~ case 4:
-			//~ return 'audio/';
-		//~ case 5:
-			//~ return 'audio/';
-		//~ case 6:
-			//~ return 'audio/';
-		//~ 
-	//~ }
-	//~ // In-script or local storage (hi def.)? 
-	//~ // Local storage
-	//~ hi_def_audio = GM_getValue('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME);
-	//~ if (hi_def_audio) {
-		//~ if (hi_def_audio != '') {
-			//~ hi_def_audio = JSON.parse(hi_def_audio.replace(/'/g,'"')); // array
-			//~ return hi_def_audio[return_snippet];
-		//~ }
-	//~ }
 }
 
 /**
- * Check for page load and then continue!
- * Begin!
+ * Check for page load and then continue.
  */
 var ih = '';
 if (document.readyState == "complete" || document.readyState == "interactive") {
