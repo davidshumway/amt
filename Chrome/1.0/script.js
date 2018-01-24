@@ -54,15 +54,6 @@ var globals = {
 }
 
 /**
- * Remove old localStorage embedded audio
- * The key is 'OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME.
- * This is audio from prior to 1.0.7, 12 Sep 2014.
- */
-if (localStorage.hasOwnProperty('OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME)) {
-	delete localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_HI_DEF_AUDIO' + SCRIPT_NAME];
-}
-
-/**
  * OBJECT_MT_TOOLS_LOCAL_STORAGE
  * 
  */
@@ -87,11 +78,6 @@ if (GM_getValue('OBJECT_MT_TOOLS_LOCAL_STORAGE'+SCRIPT_NAME) != null) {
 	initial_tool_settings();
 	
 }
-
-/**
- * General Functions
- * 
- */
 
 /**
  * function initial_tool_settings
@@ -122,9 +108,11 @@ function initial_tool_settings() {
 		
 		'IS_ACTIVE_RETURN_AND_ACCEPT': false,
 		
-		'IFRAME_HEIGHT': 6000, // Change to 6000, 5 Sep 2014
+		'IFRAME_HEIGHT': 6000,
 		
-		'IFRAME_OFFSET_TOP': 200,
+		'IFRAME_OFFSET_TOP': 24,
+		
+		'IFRAME_ENABLE_FULL_SCREEN': true,
 		
 		'CAPTCHA_AUDIO_SNIPPET': 0,
 		
@@ -189,8 +177,14 @@ function el(obj_el) {
 	var i;
 	x = document.createElement(obj_el.create);
 	for (i in obj_el) {
-		if (i == 'create') continue;
-		x.setAttribute(i, obj_el[i]);
+		if (i == 'create')
+			continue;
+		else if (i == 'innerHTML')
+			x.innerHTML = obj_el[i];
+		else if (i == 'innerText')
+			x.innerText = obj_el[i];
+		else
+			x.setAttribute(i, obj_el[i]);
 	}
 	return x;
 }
@@ -264,42 +258,41 @@ function play_audio(number) {
  */
 function sanitize(obj) {
 	if (!obj.hasOwnProperty('IS_ACTIVE_IFRAME_HEIGHT')) {
-		obj.IS_ACTIVE_IFRAME_HEIGHT = false;
+		obj.IS_ACTIVE_IFRAME_HEIGHT = true;
 	}
 	if (!obj.hasOwnProperty('IS_ACTIVE_IFRAME_WIDTH')) {
-		obj.IS_ACTIVE_IFRAME_WIDTH = false;
+		obj.IS_ACTIVE_IFRAME_WIDTH = true;
 	}
 	if (!obj.hasOwnProperty('IS_ACTIVE_IFRAME_OFFSET')) {
-		obj.IS_ACTIVE_IFRAME_OFFSET = false;
+		obj.IS_ACTIVE_IFRAME_OFFSET = true;
 	}
 	if (!obj.hasOwnProperty('IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT')) {
-		obj.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT = false;
+		obj.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT = true;
 	}
 	if (!obj.hasOwnProperty('IS_ACTIVE_CAPTCHA_INPUT_FOCUS')) {
-		obj.IS_ACTIVE_CAPTCHA_INPUT_FOCUS = false;
+		obj.IS_ACTIVE_CAPTCHA_INPUT_FOCUS = true;
 	}
 	if (!obj.hasOwnProperty('IS_ACTIVE_CAPTCHA_DISPLAY_ALERT')) {
-		obj.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT = false;
+		obj.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT = true;
 	}
 	if (!obj.hasOwnProperty('IS_ACTIVE_CAPTCHA_AUDIO_ALERT')) {
-		obj.IS_ACTIVE_CAPTCHA_AUDIO_ALERT = false;
+		obj.IS_ACTIVE_CAPTCHA_AUDIO_ALERT = true;
 	}
 	if (!obj.hasOwnProperty('IS_ACTIVE_RETURN_AND_ACCEPT')) {
-		obj.IS_ACTIVE_RETURN_AND_ACCEPT = false;
+		obj.IS_ACTIVE_RETURN_AND_ACCEPT = true;
 	}
 	if (!obj.hasOwnProperty('IFRAME_HEIGHT')) {
 		obj.IFRAME_HEIGHT = 6000;
 	}
 	if (!obj.hasOwnProperty('IFRAME_OFFSET_TOP')) {
-		obj.IFRAME_OFFSET_TOP = 200;
+		obj.IFRAME_OFFSET_TOP = 24;
+	}
+	if (!obj.hasOwnProperty('IFRAME_ENABLE_FULL_SCREEN')) {
+		obj.IFRAME_ENABLE_FULL_SCREEN = true;
 	}
 	if (!obj.hasOwnProperty('CAPTCHA_AUDIO_SNIPPET')) {
 		obj.CAPTCHA_AUDIO_SNIPPET = 'Random';
 	}
-	// Remove this.
-	//~ if (!obj.hasOwnProperty('CAPTCHA_USING_HI_DEF')) {
-		//~ obj.CAPTCHA_USING_HI_DEF = false;
-	//~ }
 	if (!obj.hasOwnProperty('CAPTCHA_IS_PRESENT')) {
 		obj.CAPTCHA_IS_PRESENT = false;
 	}
@@ -364,24 +357,499 @@ function hideMenu() {
 		document.getElementById(SCRIPT_NAME+'btn_show_menu').style.display = 'inline';
 }
 
+function generate_container_basic(theMenu) {
+	// info image
+	// size of original image is 20x20
+	var img_info64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3QgNExsG/ltFywAAA2BJREFUOMuV1MtvG0UcB/Dv7qw3rV+JncSWDaVJ7TxKGtuVoZAWtaUgHofSWpQ4cENphJT8OVS5NBEHJEDgSpBgVYhjKY8k8iG0ipLm2bgmlhXFa6937X3McHBrJyF2y0ijOczMR9+RfvPj8JzhHZt8d6jvxFcC4ci9B1tfZKcnZpudJ802PaOT12+8NTDzwYVIW9cJn8NjF0c23K+tlVLJxf8NekYnr392JZyInukjadlArmSg3d3GBdqtsTVXtCFKGmGfXgklQv09ZFs2UKqYkDUDWVmD1W7jTnvtsUZJyVHYyNuhxEBfD3lc0CFrJuSKUZ2aiUxRQ8txKxfxO2Ob7a//ByWHseHLg4n+3h6yWdAhP00WdLVg+EwHftvII1cqYykro0xE7kKXK7bdee4AWgO9N29d++Ry6E5vMEg2JR2yZqCkVZMRDuiwWvD93ztY31VQrOjISGVAFLmLgfZYuvONGkqeYR9fDN8JBgJkQ9Jrz5MrJmwWDgIPrO8quL+5B5OaYJSCMRPZYhnMYuEuBTpiaU8V5byjt965cSly9+SpbsuGpEPVDCi6CaViQNENnGxtwUf9bkR8dkS//AO6YYKxZygFoyYGvXZEWnnzp9+XYsL5ge5vuk91W5b3NCiaAUUzn64GVM3AL9kiRJ4i6nfUktUxCjCKxUweVsFFzgZ9XwsEEIqaCUnVq8n2YZKqoVTRQCkF4bkaUsfquFrR4BCIwN9b2vo8vb5m+mw8CqqOQllDQdUgqRokVQdjFBwYCA8wah6JRf1OvOoU2NxyeozP3h6fmflr6WrxyZbe5RRQUHVIZR2SqsOkBhitgsK+hIexfjuhP8+vDGenJr7lASB3e/zu7PzyNexmjF6XCLlcxxijsIsEhOPgPi4cic3Or8RzUxOJA3WopJKrGf+bCwMdx+Jul4PfzpfBGMXV052Ih32gjGHQ58TDf/LYLZXr2Nyjkdx0FQMA7vDX6xyb/PC9s8GZHLEL97fyYMwE9pXIgWRzj0Zy0+M/NP3LSiq5uuMfWgh57HFXm43f3lNeGGvYbZRUcnXnpaGFsNcRd7fa+Md7pRfCmvbDKnp+4dzLrrjNdoz32ESE20T6458rDbHndmwllVx94ht68IpDfN8BQ/91cfNmbmr8u2Z3/gVFGDS1XwxhOQAAAABJRU5ErkJggg==';
+	/**
+	 * Enable full screen mode
+	 * 
+	 * // toggle https://stackoverflow.com/questions/309081/how-do-you-create-a-toggle-button
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IFRAME_ENABLE_FULL_SCREEN'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'Full screen mode';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	
+	/**
+	 * Always auto-accept next job
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = '"Automatically accept the next HIT" checkbox always enabled';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	
+	/**
+	 * Turn off auto-accept next job
+	 */
+	// Blank left field here.
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	theMenu.appendChild(u);
+	// Right column
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'button',
+		'id':SCRIPT_NAME+'turn_off_auto_accept',
+		'value':'Disable "Automatically accept the next HIT" in all tabs and windows',
+		'class':SCRIPT_NAME+'clickable_btn'
+	});
+	u.appendChild(u2);
+	// Information icon
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'Pressing this button will turn off every "Automatically accept the next HIT" checkbox. Works in all tabs and windows where the checkbox appears.'
+	});
+	u.appendChild(u2);
+	// Append right div
+	theMenu.appendChild(u);
+	// Spacer
+	u = el({
+		'create':'hr',
+	});
+	theMenu.appendChild(u);
+	
+	/**
+	 * When a CAPTCHA appears, place cursor in the CAPTCHA box
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_INPUT_FOCUS'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'When a CAPTCHA appears, place cursor in the CAPTCHA box';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'When a CAPTCHA appears, place cursor in the CAPTCHA box? In addition, if previous CAPTCHA was entered incorrectly, this tool will clear the text from the previous try.'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * Display a red alert box when a CAPTCHA appears
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_DISPLAY_ALERT'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'When CAPTCHA appears, display red alert icon on all pages';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'When a CAPTCHA appears, display red alert icon on all pages? In addition, this tool will change document title to "CAPTCHA".'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * Play audio sound the first time a CAPTCHA appears
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_AUDIO_ALERT'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'When CAPTCHA appears, play an audio sound';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'When a CAPTCHA appears, play an audio sound? Audio snippet will be played once within a span of 60 seconds. Does not play on reload of the browser window or in any other tabs if less than 60 seconds has elapsed. In addition, this tool will change document title to "CAPTCHA".'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * CAPTCHA Audio Snippet
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'select',
+		'style':'width:80%;text-align:left;',
+		'id':SCRIPT_NAME+'CAPTCHA_AUDIO_SNIPPET'
+	});
+	u3 = el({
+		'create':'option',
+		'value':'Random'
+	});
+	u3.appendChild(document.createTextNode('Random'));
+	u2.appendChild(u3);
+	
+	var count = 0;
+	for (var i in audio_snippets) {
+		u3 = el({
+			'create':'option',
+			'value':count
+		});
+		u3.appendChild(document.createTextNode(audio_snippets[i].title));
+		u2.appendChild(u3);
+		count++;
+	}
+	
+	x = OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET;
+	if (x != 'Random')
+		u2.selectedIndex = x*1 + 1;
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'CAPTCHA Audio Snippet';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'Select an audio snippet. \
+			Audio snippets are embedded within extension. \
+			None of the audio is downloaded externally. \
+			Provided links are where the audio was originally downloaded. \
+			Applicable licenses at time of download were CC-0, \
+			CC-Sampling+, and CC-Attribution.'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * Audio snippet detail
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u.appendChild(document.createTextNode(' '));
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2',
+		'id':SCRIPT_NAME+'info_audio'
+	});
+	fill_audio_info(u, OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET); //
+	theMenu.appendChild(u);
+	u = el({
+		'create':'hr',
+	});
+	theMenu.appendChild(u);
+	
+	
+	/**
+	 * Display the "Return and Accept" button
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_RETURN_AND_ACCEPT'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'Display "Return and Accept" button';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'Display "Return and Accept" button? Pressing this button will, if possible, return the current job and accept another job in the group.'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'hr',
+	});
+	theMenu.appendChild(u);
+}
+function generate_containers_advanced(theMenu) {
+	var img_info64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3QgNExsG/ltFywAAA2BJREFUOMuV1MtvG0UcB/Dv7qw3rV+JncSWDaVJ7TxKGtuVoZAWtaUgHofSWpQ4cENphJT8OVS5NBEHJEDgSpBgVYhjKY8k8iG0ipLm2bgmlhXFa6937X3McHBrJyF2y0ijOczMR9+RfvPj8JzhHZt8d6jvxFcC4ci9B1tfZKcnZpudJ802PaOT12+8NTDzwYVIW9cJn8NjF0c23K+tlVLJxf8NekYnr392JZyInukjadlArmSg3d3GBdqtsTVXtCFKGmGfXgklQv09ZFs2UKqYkDUDWVmD1W7jTnvtsUZJyVHYyNuhxEBfD3lc0CFrJuSKUZ2aiUxRQ8txKxfxO2Ob7a//ByWHseHLg4n+3h6yWdAhP00WdLVg+EwHftvII1cqYykro0xE7kKXK7bdee4AWgO9N29d++Ry6E5vMEg2JR2yZqCkVZMRDuiwWvD93ztY31VQrOjISGVAFLmLgfZYuvONGkqeYR9fDN8JBgJkQ9Jrz5MrJmwWDgIPrO8quL+5B5OaYJSCMRPZYhnMYuEuBTpiaU8V5byjt965cSly9+SpbsuGpEPVDCi6CaViQNENnGxtwUf9bkR8dkS//AO6YYKxZygFoyYGvXZEWnnzp9+XYsL5ge5vuk91W5b3NCiaAUUzn64GVM3AL9kiRJ4i6nfUktUxCjCKxUweVsFFzgZ9XwsEEIqaCUnVq8n2YZKqoVTRQCkF4bkaUsfquFrR4BCIwN9b2vo8vb5m+mw8CqqOQllDQdUgqRokVQdjFBwYCA8wah6JRf1OvOoU2NxyeozP3h6fmflr6WrxyZbe5RRQUHVIZR2SqsOkBhitgsK+hIexfjuhP8+vDGenJr7lASB3e/zu7PzyNexmjF6XCLlcxxijsIsEhOPgPi4cic3Or8RzUxOJA3WopJKrGf+bCwMdx+Jul4PfzpfBGMXV052Ih32gjGHQ58TDf/LYLZXr2Nyjkdx0FQMA7vDX6xyb/PC9s8GZHLEL97fyYMwE9pXIgWRzj0Zy0+M/NP3LSiq5uuMfWgh57HFXm43f3lNeGGvYbZRUcnXnpaGFsNcRd7fa+Md7pRfCmvbDKnp+4dzLrrjNdoz32ESE20T6458rDbHndmwllVx94ht68IpDfN8BQ/91cfNmbmr8u2Z3/gVFGDS1XwxhOQAAAABJRU5ErkJggg==';
+	
+	/**
+	 * Section = fullscreen
+	 */
+	
+	/**
+	 * Show a title for section
+	 */
+	u = el({
+		'create':'div',
+		'style':'width:100%;font-weight:bold;',
+		'innerText':'Options for full-screen mode.'
+	});
+	
+	/**
+	 * Modify height of job window
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_IFRAME_HEIGHT'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'Modify height of job window';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	
+	/**
+	 * Job window height value
+	 * 
+	 */
+	// Div
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	// Input
+	u2 = el({
+		'create':'input',
+		'type':'text',
+		'style':'text-align:right;',
+		'size':5,
+		'id':SCRIPT_NAME+'IFRAME_HEIGHT',
+		'value':OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT
+	});
+	// Input eventListener
+	enterKeyEventListener(u2);
+	// Append input
+	u.appendChild(u2);
+	// Append " px"
+	u2 = ' px';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	// Div
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'Height of job window (in pixels).';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'Height of the job window. Value is in pixels. Minimum value 0. No maximum value. Default size is approximately 400 pixels.'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	//~ u = el({
+		//~ 'create':'hr',
+	//~ });
+	//~ theMenu.appendChild(u);
+	
+	/**
+	 * Maximize width of job window
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_IFRAME_WIDTH'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'Maximize width of job window';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	//~ u = el({
+		//~ 'create':'hr',
+	//~ });
+	//~ theMenu.appendChild(u);
+	
+	/**
+	 * Modify vertical position of job window
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_IFRAME_OFFSET'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'Modify vertical position of job window';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	
+	/**
+	 * Enter a number for distance of job window from top of the page.
+	 * 
+	 */
+	// Div
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	// Input
+	u2 = el({
+		'create':'input',
+		'type':'text',
+		'style':'text-align:right;',
+		'size':5,
+		'id':SCRIPT_NAME+'IFRAME_OFFSET_TOP',
+		'value':OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP
+	});
+	// Input eventListener
+	enterKeyEventListener(u2);
+	// Append
+	u.appendChild(u2);
+	// Append " px"
+	u2 = ' px';
+	u.appendChild(document.createTextNode(u2));
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'Distance of job window from top of page (in pixels).';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'Distance of job window from top of page. \
+			The height of top "menu" is 20px. Value is in pixels. \
+			Minimum value 0. No maximum value.'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	//~ u = el({
+		//~ 'create':'hr',
+	//~ });
+	//~ theMenu.appendChild(u);
+}
+function generate_containers(theMenu, show_advanced_menu = false) {
+	if (!show_advanced_menu) {
+		generate_container_basic(theMenu);
+	} else {
+		generate_containers_advanced(theMenu);
+	}
+}
 /**
  * Function showMenu
  * 
+ * @param show_advanced_menu: boolean
  */
-function showMenu() {
+function showMenu(show_advanced_menu = false) {
 
 	var t,
 		theMenu,
 		u,
 		u2,
 		u3,
-		x,
-		img_info64;
-	
-	// info image
-	// size of original image is 20x20
-	img_info64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3QgNExsG/ltFywAAA2BJREFUOMuV1MtvG0UcB/Dv7qw3rV+JncSWDaVJ7TxKGtuVoZAWtaUgHofSWpQ4cENphJT8OVS5NBEHJEDgSpBgVYhjKY8k8iG0ipLm2bgmlhXFa6937X3McHBrJyF2y0ijOczMR9+RfvPj8JzhHZt8d6jvxFcC4ci9B1tfZKcnZpudJ802PaOT12+8NTDzwYVIW9cJn8NjF0c23K+tlVLJxf8NekYnr392JZyInukjadlArmSg3d3GBdqtsTVXtCFKGmGfXgklQv09ZFs2UKqYkDUDWVmD1W7jTnvtsUZJyVHYyNuhxEBfD3lc0CFrJuSKUZ2aiUxRQ8txKxfxO2Ob7a//ByWHseHLg4n+3h6yWdAhP00WdLVg+EwHftvII1cqYykro0xE7kKXK7bdee4AWgO9N29d++Ry6E5vMEg2JR2yZqCkVZMRDuiwWvD93ztY31VQrOjISGVAFLmLgfZYuvONGkqeYR9fDN8JBgJkQ9Jrz5MrJmwWDgIPrO8quL+5B5OaYJSCMRPZYhnMYuEuBTpiaU8V5byjt965cSly9+SpbsuGpEPVDCi6CaViQNENnGxtwUf9bkR8dkS//AO6YYKxZygFoyYGvXZEWnnzp9+XYsL5ge5vuk91W5b3NCiaAUUzn64GVM3AL9kiRJ4i6nfUktUxCjCKxUweVsFFzgZ9XwsEEIqaCUnVq8n2YZKqoVTRQCkF4bkaUsfquFrR4BCIwN9b2vo8vb5m+mw8CqqOQllDQdUgqRokVQdjFBwYCA8wah6JRf1OvOoU2NxyeozP3h6fmflr6WrxyZbe5RRQUHVIZR2SqsOkBhitgsK+hIexfjuhP8+vDGenJr7lASB3e/zu7PzyNexmjF6XCLlcxxijsIsEhOPgPi4cic3Or8RzUxOJA3WopJKrGf+bCwMdx+Jul4PfzpfBGMXV052Ih32gjGHQ58TDf/LYLZXr2Nyjkdx0FQMA7vDX6xyb/PC9s8GZHLEL97fyYMwE9pXIgWRzj0Zy0+M/NP3LSiq5uuMfWgh57HFXm43f3lNeGGvYbZRUcnXnpaGFsNcRd7fa+Md7pRfCmvbDKnp+4dzLrrjNdoz32ESE20T6458rDbHndmwllVx94ht68IpDfN8BQ/91cfNmbmr8u2Z3/gVFGDS1XwxhOQAAAABJRU5ErkJggg==';
-	
+		x;
+		
 	// audio snippets
 	audio_snippets = audio_snippets_data(true);
 	
@@ -389,6 +857,7 @@ function showMenu() {
 	 * Styles
 	 * Only add these style when the user clicks the "tools" button,
 	 * when the user wants to see the tools menu.
+	 * Consider: Remove old styles?
 	 */
 	// m1
 	GM_addStyle(
@@ -422,6 +891,15 @@ function showMenu() {
 			margin-top:-2px;\
 		}'
 	);
+	// advanced versus basic
+	GM_addStyle(
+		'.'+SCRIPT_NAME+'advanced {\
+			display:none;\
+		}\
+		.'+SCRIPT_NAME+'basic {\
+			display:block;\
+		}'
+	);
 	// HR
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'menu_div hr {\
@@ -431,7 +909,6 @@ function showMenu() {
 		}'
 	);
 	// menu_div
-	// 5 Sep 2014, Increase height 480 to 540
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'menu_div {\
 			position:absolute;\
@@ -449,8 +926,7 @@ function showMenu() {
 		}'
 	);
 	// dimmer
-	// 5 Sep 2014 Add cursor:pointer;
-	GM_addStyle( // dimmer
+	GM_addStyle(
 		'#'+SCRIPT_NAME+'menu_div_dim {\
 			position:fixed;\
 			top:0;\
@@ -462,15 +938,20 @@ function showMenu() {
 			opacity:0.4;\
 			filter:alpha(opacity=40);\
 			cursor:pointer;\
-		}'
-	);
-	GM_addStyle(
-		'#'+SCRIPT_NAME+'menu_div_dim:hover {\
+		}\
+		#'+SCRIPT_NAME+'menu_div_dim:hover {\
 			background-color:#222;\
 		}'
 	);
+	//~ GM_addStyle(
+		//~ '#'+SCRIPT_NAME+'menu_div_dim:hover {\
+			//~ background-color:#222;\
+		//~ }'
+	//~ );
 	// div_info
-	GM_addStyle( // hover div for info
+	// z-index on top of menu_status
+	// hover div for info?
+	GM_addStyle(
 		'#'+SCRIPT_NAME+'div_info {\
 			position:absolute;\
 			left:50%;\
@@ -485,10 +966,10 @@ function showMenu() {
 			-moz-border-radius:6px;\
 			border-radius:6px;\
 			z-index:1020;\
-		}'// ** z-index on top of menu_status
+		}'
 	);
 	// menu_status
-	GM_addStyle( // menu status
+	GM_addStyle(
 		'#'+SCRIPT_NAME+'menu_status {\
 			width:40%;\
 			margin-top:2px;\
@@ -504,7 +985,6 @@ function showMenu() {
 			margin-left:30%;\
 		}'
 	);
-		//width:100%;margin-left:-2px;
 	// img_info
 	GM_addStyle( // image for info
 		'.'+SCRIPT_NAME+'img_info {\
@@ -527,580 +1007,51 @@ function showMenu() {
 	/**
 	 * Div containers
 	 */
-	/**
-	 * Background dimmer
-	 */
+	// Background dimmer
 	u = el({
-			'create':'div',
-			'id':SCRIPT_NAME+'menu_div_dim'
+		'create':'div',
+		'id':SCRIPT_NAME+'menu_div_dim'
 	});
 	document.body.appendChild(u);
 	u.addEventListener('click', function() {
 		hideMenu();
 	}, false);
-	
-	/**
-	 * Menu div
-	 */
+	// Menu div
 	u = el({
-			'create':'div',
-			'id':SCRIPT_NAME+'menu_div'
+		'create':'div',
+		'id':SCRIPT_NAME+'menu_div'
 	});
 	document.body.appendChild(u);
 	theMenu = document.getElementById(SCRIPT_NAME+'menu_div');
 	
-	
-	/**
-	 * Menu items
-	 *
-	 */
 	/**
 	 * Menu title
-	 * 
 	 */
 	u = el({
-			'create':'h2',
-			'style':'width:100%;margin-top:4px;margin-bottom:4px;'
+		'create':'h2',
+		'style':'width:100%;margin-top:4px;margin-bottom:4px;'
 	});
 	u2 = 'Tools for Amazon\'s Mechanical Turk';
 	u.appendChild(document.createTextNode(u2));
 	theMenu.appendChild(u);
 	u = el({
-			'create':'hr',
+		'create':'hr',
 	});
 	theMenu.appendChild(u);
 	
 	/**
-	 * Modify height of job window?
-	 * 
+	 * Menu items
 	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_IFRAME_HEIGHT'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'Modify height of job window?';
-	u.appendChild(document.createTextNode(u2));
-	theMenu.appendChild(u);
-	
-	/**
-	 * Job window height value
-	 * 
-	 */
-	// Div
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	// Input
-	u2 = el({
-			'create':'input',
-			'type':'text',
-			'style':'text-align:right;',
-			'size':5,
-			'id':SCRIPT_NAME+'IFRAME_HEIGHT',
-			'value':OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT
-	});
-	// Input eventListener
-	enterKeyEventListener(u2);
-	// Append input
-	u.appendChild(u2);
-	// Append " px"
-	u2 = ' px';
-	u.appendChild(document.createTextNode(u2));
-	theMenu.appendChild(u);
-	// Div
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'Height of job window (in pixels).';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'Height of the job window. Value is in pixels. Minimum value 0. No maximum value. Default size is approximately 400 pixels.'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'hr',
-	});
-	theMenu.appendChild(u);
-	
-	/**
-	 * Maximize width of job window?
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_IFRAME_WIDTH'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'Maximize width of job window?';
-	u.appendChild(document.createTextNode(u2));
-	theMenu.appendChild(u);
-	u = el({
-			'create':'hr',
-	});
-	theMenu.appendChild(u);
-	
-	/**
-	 * Modify vertical position of job window?
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_IFRAME_OFFSET'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'Modify vertical position of job window?';
-	u.appendChild(document.createTextNode(u2));
-	theMenu.appendChild(u);
-	/*u = el({
-			'create':'br',
-			'style':'clear:both;'
-	});
-	theMenu.appendChild(u);*/
-	
-	/**
-	 * Enter a number for distance of job window from top of the page.
-	 * 
-	 */
-	// Div
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	// Input
-	u2 = el({
-			'create':'input',
-			'type':'text',
-			'style':'text-align:right;',
-			'size':5,
-			'id':SCRIPT_NAME+'IFRAME_OFFSET_TOP',
-			'value':OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP
-	});
-	// Input eventListener
-	enterKeyEventListener(u2);
-	// Append
-	u.appendChild(u2);
-	// Append " px"
-	u2 = ' px';
-	u.appendChild(document.createTextNode(u2));
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'Distance of job window from top of page (in pixels).';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'Distance of job window from top of page. Value is in pixels. Minimum value 0. No maximum value. Default distance is approximately 300 pixels.'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'hr',
-	});
-	theMenu.appendChild(u);
-	
-	/**
-	 * Always auto-accept next job?
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = '"Automatically accept the next HIT" checkbox always enabled?';
-	u.appendChild(document.createTextNode(u2));
-	theMenu.appendChild(u);
-	
-	/**
-	 * Turn off auto-accept next job
-	 */
-	// Blank left field here.
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	theMenu.appendChild(u);
-	// Right column
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = el({
-		'create':'input',
-		'type':'button',
-		'id':SCRIPT_NAME+'turn_off_auto_accept',
-		'value':'Disable "Automatically accept the next HIT" in all tabs and windows',
-		'class':SCRIPT_NAME+'clickable_btn'
-	});
-	u.appendChild(u2);
-	// Information icon
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'Pressing this button will turn off every "Automatically accept the next HIT" checkbox. Works in all tabs and windows where the checkbox appears.'
-	});
-	u.appendChild(u2);
-	// Append right div
-	theMenu.appendChild(u);
-	// Spacer
-	u = el({
-			'create':'hr',
-	});
-	theMenu.appendChild(u);
-	
-	//~ u = el({
-			//~ 'create':'hr',
-	//~ });
-	//~ theMenu.appendChild(u);
-	
-	/*
-	 * 
-	 * When a CAPTCHA appears, place cursor in the CAPTCHA box?
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_INPUT_FOCUS'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'When a CAPTCHA appears, place cursor in the CAPTCHA box?';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'When a CAPTCHA appears, place cursor in the CAPTCHA box? In addition, if previous CAPTCHA was entered incorrectly, this tool will clear the text from the previous try.'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	/*u = el({
-			'create':'br',
-			'style':'clear:both;'
-	});
-	theMenu.appendChild(u);*/
-	
-	/*
-	 * 
-	 * Display a red alert box when a CAPTCHA appears?
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_DISPLAY_ALERT'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'When a CAPTCHA appears, display red alert icon on all pages?';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'When a CAPTCHA appears, display red alert icon on all pages? In addition, this tool will change document title to "CAPTCHA".'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	/*u = el({
-			'create':'br',
-			'style':'clear:both;'
-	});
-	theMenu.appendChild(u);*/
-	
-	/*
-	 * 
-	 * Play audio sound the first time a CAPTCHA appears?
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_AUDIO_ALERT'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'When a CAPTCHA appears, play an audio sound?';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'When a CAPTCHA appears, play an audio sound? Audio snippet will be played once within a span of 60 seconds. Does not play on reload of the browser window or in any other tabs if less than 60 seconds has elapsed. In addition, this tool will change document title to "CAPTCHA".'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	/*u = el({
-			'create':'br',
-			'style':'clear:both;'
-	});
-	theMenu.appendChild(u);*/
-	
-	/*
-	 * 
-	 * CAPTCHA Audio Snippet
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'select',
-			'style':'width:80%;text-align:left;',
-			'id':SCRIPT_NAME+'CAPTCHA_AUDIO_SNIPPET'
-	});
-	u3 = el({
-			'create':'option',
-			'value':'Random'
-	});
-	u3.appendChild(document.createTextNode('Random'));
-	u2.appendChild(u3);
-	
-	var count = 0;
-	for (var i in audio_snippets) {
-		u3 = el({
-				'create':'option',
-				'value':count
-		});
-		u3.appendChild(document.createTextNode(audio_snippets[i].title));
-		u2.appendChild(u3);
-		count++;
-	}
-	
-	x = OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET;
-	if (x != 'Random')
-		u2.selectedIndex = x*1 + 1;
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'CAPTCHA Audio Snippet';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'Select an audio snippet. Audio snippets are embedded within extension. None of the audio is downloaded externally. Provided links are where the audio was originally downloaded. Applicable licenses at time of download were CC-0, CC-Sampling+, and CC-Attribution.'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	/*u = el({
-			'create':'br',
-			'style':'clear:both;'
-	});
-	theMenu.appendChild(u);*/
-	
-	/*
-	 * 
-	 * Audio snippet detail
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u.appendChild(document.createTextNode(' '));
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2',
-			'id':SCRIPT_NAME+'info_audio'
-	});
-	fill_audio_info(u, OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET); //
-	theMenu.appendChild(u);
-	u = el({
-			'create':'hr',
-	});
-	theMenu.appendChild(u);
-	
-	// Remove this.
-	// This is for older version audio.
-	//~ /*
-	 //~ * 
-	 //~ * Audio snippet lo/hi def
-	 //~ * 
-	 //~ */
-	//~ u = el({
-			//~ 'create':'div',
-			//~ 'class':SCRIPT_NAME+'m1'
-	//~ });
-	//~ u.appendChild(document.createTextNode(' '));
-	//~ theMenu.appendChild(u);
-	//~ u = el({
-			//~ 'create':'div',
-			//~ 'class':SCRIPT_NAME+'m2'
-	//~ });
-	//~ 
-	//~ if (OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_USING_HI_DEF) {
-		//~ u2 = el({
-				//~ 'create':'input',
-				//~ 'type':'button',
-				//~ 'id':SCRIPT_NAME+'audio_hi_def_remove',
-				//~ 'value':'Remove High Definition Audio'
-		//~ });
-		//~ u.appendChild(u2);
-		//~ u2 = el({
-				//~ 'create':'img',
-				//~ 'src':img_info64,
-				//~ 'class':SCRIPT_NAME+'img_info',
-				//~ 'alt':'Remove High Definition Audio. Will use the low definition audio and will delete the installed high definition audio. After deletion there is the option to re-download and install high definition audio.'
-		//~ });
-		//~ u.appendChild(u2);
-	//~ } else {
-		//~ u2 = el({
-				//~ 'create':'input',
-				//~ 'type':'button',
-				//~ 'id':SCRIPT_NAME+'audio_hi_def_install',
-				//~ 'value':'Download and Install High Definition Audio (490.94 KB)'
-		//~ });
-		//~ u.appendChild(u2);
-		//~ u2 = el({
-				//~ 'create':'img',
-				//~ 'src':img_info64,
-				//~ 'class':SCRIPT_NAME+'img_info',
-				//~ 'alt':'Download and Install High Definition Audio (490.94 KB). Same set of audio snippets as low definition but of a higher quality. Audio data is retrieved from pastebin.com, http://pastebin.com/14R5zCYR. High definition audio may be removed afterwards, if desired.'
-		//~ });
-		//~ u.appendChild(u2);
-		//~ u2 = el({
-				//~ 'create':'a',
-				//~ 'href':'http://pastebin.com/14R5zCYR',
-				//~ 'style':'margin-left:10px;',
-				//~ 'target':'_blank',
-				//~ 'alt':'Preview audio download.'
-		//~ });
-		//~ u2.appendChild(document.createTextNode('[ ^ ]'));
-		//~ u.appendChild(u2);
-	//~ }
-	//~ theMenu.appendChild(u);
-	//~ u = el({
-			//~ 'create':'hr',
-	//~ });
-	//~ theMenu.appendChild(u);
-	
-	/**
-	 * Display the "Return and Accept" button?
-	 * 
-	 */
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-			'create':'input',
-			'type':'checkbox',
-			'id':SCRIPT_NAME+'IS_ACTIVE_RETURN_AND_ACCEPT'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'div',
-			'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'Display "Return and Accept" button?';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-			'create':'img',
-			'src':img_info64,
-			'class':SCRIPT_NAME+'img_info',
-			'alt':'Display "Return and Accept" button? Pressing this button will, if possible, return the current job and accept another job in the group.'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-			'create':'hr',
-	});
-	theMenu.appendChild(u);
+	generate_containers(theMenu, show_advanced_menu);
 	
 	/**
 	 * Info
-	 * 
 	 */
 	theMenu.appendChild(document.createElement('br'));
 	theMenu.appendChild(document.createTextNode(' * Refresh the page after saving settings to see changes.'));
 	
 	/**
 	 * Hidden div for extra info
-	 * 
 	 */
 	u = el({
 		'create':'div',
@@ -1110,7 +1061,6 @@ function showMenu() {
 	
 	/**
 	 * Menu status div
-	 * 
 	 */
 	u = el({
 		'create':'div',
@@ -1133,10 +1083,10 @@ function showMenu() {
 	});
 	u_= el({
 		'create':'div',
-		'style':'width:60%;margin-left:20%;padding-bottom:10px;overflow:hidden;',
+		'style':'width:80%;margin-left:10%;padding-bottom:10px;overflow:hidden;',
 	});
 	u.appendChild(u_);
-	//Save
+	// Save
 	u2 = el({
 		'create':'input',
 		'type':'button',
@@ -1145,7 +1095,7 @@ function showMenu() {
 		'class':SCRIPT_NAME+'clickable_btn'
 	});
 	u_.appendChild(u2);
-	//Exit
+	// Exit
 	u2 = el({
 		'create':'input',
 		'type':'button',
@@ -1154,7 +1104,7 @@ function showMenu() {
 		'class':SCRIPT_NAME+'clickable_btn'
 	});
 	u_.appendChild(u2);
-	//Enable
+	// Enable
 	u2 = el({
 		'create':'input',
 		'type':'button',
@@ -1163,8 +1113,7 @@ function showMenu() {
 		'class':SCRIPT_NAME+'clickable_btn'
 	});
 	u_.appendChild(u2);
-	
-	//Disable
+	// Disable
 	u2 = el({
 		'create':'input',
 		'type':'button',
@@ -1173,7 +1122,22 @@ function showMenu() {
 		'class':SCRIPT_NAME+'clickable_btn'
 	});
 	u_.appendChild(u2);
-	// All to menu
+	// Advanced settings
+	var advtxt;
+	if (!show_advanced_menu) {
+		advtxt = 'Advanced Settings';
+	} else {
+		advtxt = 'Basic Settings';
+	}
+	u2 = el({
+		'create':'input',
+		'type':'button',
+		'id':SCRIPT_NAME+'advanced_settings',
+		'value':advtxt,
+		'class':SCRIPT_NAME+'clickable_btn'
+	});
+	u_.appendChild(u2);
+	// All buttons to menu
 	theMenu.appendChild(u);
 	
 	/**
@@ -1216,85 +1180,95 @@ function showMenu() {
  */
 function showMenu_applyActions() {
 	
-	var u;
-	var x;
+	var u, x;
 	
-	/*
-	 * 
+	/**
 	 * IFRAME_HEIGHT/IFRAME_OFFSET_TOP
-	 * 
+	 * Disable or enable accompanying text field.
 	 */
 	u = document.getElementById(SCRIPT_NAME+'IFRAME_HEIGHT');
 	x = (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT) ? false : true;
-	u.disabled = x;
-	if (x)
-		u.style.backgroundColor = '#ddd';
-	u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
-	x = (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET) ? false : true;
-	u.disabled = x;
-	if (x)
-		u.style.backgroundColor = '#ddd';
+	if (u) {
+		u.disabled = x;
+		if (x)
+			u.style.backgroundColor = '#ddd';
+	}
+	if (u) {
+		u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
+		x = (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET) ? false : true;
+		u.disabled = x;
+		if (x)
+			u.style.backgroundColor = '#ddd';
+	}
 		
-	/*
-	 * 
+	/**
 	 * IS_ACTIVE_IFRAME_HEIGHT
 	 * 
 	 */
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_HEIGHT');
-	u.onchange = function() {
-		var u;
-		u = document.getElementById(SCRIPT_NAME+'IFRAME_HEIGHT');
-		if (this.checked) {
-			u.disabled = false;
-			u.style.backgroundColor = '#fff';
-		} else {
-			u.disabled = true;
-			u.style.backgroundColor = '#ddd';
+	if (u) {
+		u.onchange = function() {
+			var u;
+			u = document.getElementById(SCRIPT_NAME+'IFRAME_HEIGHT');
+			if (this.checked) {
+				u.disabled = false;
+				u.style.backgroundColor = '#fff';
+			} else {
+				u.disabled = true;
+				u.style.backgroundColor = '#ddd';
+			}
 		}
 	}
 	
-	/*
-	 * 
+	/**
 	 * IS_ACTIVE_IFRAME_OFFSET
 	 * 
 	 */
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_OFFSET');
-	u.onchange = function() {
-		var u;
-		u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
-		if (this.checked) {
-			u.disabled = false;
-			u.style.backgroundColor = '#fff';
-		} else {
-			u.disabled = true;
-			u.style.backgroundColor = '#ddd';
+	if (u) {
+		u.onchange = function() {
+			var u;
+			u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
+			if (this.checked) {
+				u.disabled = false;
+				u.style.backgroundColor = '#fff';
+			} else {
+				u.disabled = true;
+				u.style.backgroundColor = '#ddd';
+			}
 		}
-	}	
+	}
 	
-	/*
-	 * 
+	/**
 	 * IS_ACTIVE_ checkboxes
 	 * 
 	 */
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_HEIGHT');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_WIDTH');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_OFFSET');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_INPUT_FOCUS');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_INPUT_FOCUS;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_INPUT_FOCUS;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_DISPLAY_ALERT');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_AUDIO_ALERT');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_RETURN_AND_ACCEPT');
-	u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT;
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT;
 	
-	/*
-	 * 
+	/**
 	 * Checkboxes for menu (stopPropagation)
 	 * 
 	 */
@@ -1309,13 +1283,13 @@ function showMenu_applyActions() {
 		document.getElementById(SCRIPT_NAME+'IS_ACTIVE_RETURN_AND_ACCEPT')
 	];
 	for (var i in u) {
-		u[i].onclick = function(e) { e.stopPropagation(); };
+		if (u[i])
+			u[i].onclick = function(e) { e.stopPropagation(); };
 	}
 	
-	/*
-	 * 
+	/**
 	 * Labels for menu items
-	 * 
+	 * m1 and m2
 	 */
 	u = document.getElementsByClassName(SCRIPT_NAME+'m1'); // m1 (left)
 	for (var i in u) {
@@ -1373,23 +1347,24 @@ function showMenu_applyActions() {
 		}
 	}
 	
-	/*
-	 * 
+	/**
 	 * Audio snippet info
 	 * 
 	 */
-	document.getElementById(SCRIPT_NAME+'CAPTCHA_AUDIO_SNIPPET').onchange = function() {
-		var x;
-		x = document.getElementById(SCRIPT_NAME+'info_audio');
-		x.innerHTML = '';
-		fill_audio_info(x, this.value);
-		
-		// Play audio test
-		play_audio(this.value); // Random or 0..6
+	u = document.getElementById(SCRIPT_NAME+'CAPTCHA_AUDIO_SNIPPET');
+	if (u) {
+		u.onchange = function() {
+			var x;
+			x = document.getElementById(SCRIPT_NAME+'info_audio');
+			x.innerHTML = '';
+			fill_audio_info(x, this.value);
+			
+			// Play audio test
+			play_audio(this.value); // Random or 0..6
+		}
 	}
 	
-	/*
-	 * 
+	/**
 	 * Show info
 	 * 
 	 */
@@ -1410,22 +1385,17 @@ function showMenu_applyActions() {
 		}
 	}
 	
-	/*
-	 * 
+	/**
 	 * Save button
 	 * 
 	 */
 	u = document.getElementById(SCRIPT_NAME+'save');
 	u.onclick = function() {
-		
-		/*
-		 * Update Settings
-		 */
+		// Update settings
 		updateSettings();
 	}
 	
-	/*
-	 * 
+	/**
 	 * Exit button
 	 * 
 	 */
@@ -1434,8 +1404,7 @@ function showMenu_applyActions() {
 		hideMenu();
 	}
 	
-	/*
-	 * 
+	/**
 	 * Enable/Disable buttons
 	 * 
 	 */
@@ -1449,18 +1418,45 @@ function showMenu_applyActions() {
 	}
 	
 	/**
-	 *
+	 * Advanced Settings button
+	 * 
+	 * Onclick:
+	 * 		Update settings.
+	 * 		Hide menu.
+	 * 		Show menu again (either basic or advanced).
+	 */
+	u = document.getElementById(SCRIPT_NAME+'advanced_settings');
+	u.onclick = function() {
+		if (this.value == 'Advanced Settings') {
+			// Shows advanced
+			updateSettings();
+			hideMenu();
+			showMenu(true);
+		} else {
+			// Hides advanced
+			updateSettings();
+			hideMenu();
+			showMenu(false);
+		}
+		// Hide the tools button.
+		var u = document.getElementById(SCRIPT_NAME+'btn_show_menu');
+		if (u)
+			document.getElementById(SCRIPT_NAME+'btn_show_menu').style.display = 'none';
+	}
+	
+	/**
 	 * Uncheck Auto-Accepts Button 
 	 * 
 	 */
-	 
 	u = document.getElementById(SCRIPT_NAME + 'turn_off_auto_accept');
-	u.onclick = function () {
-		// Toggle this localStorage
-		localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = true;
-		localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = false;
-		// Run
-		stopAcceptingJobs_run();
+	if (u) {
+		u.onclick = function () {
+			// Toggle this localStorage
+			localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = true;
+			localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = false;
+			// Run
+			stopAcceptingJobs_run();
+		}
 	}
 }
 
@@ -1493,90 +1489,132 @@ function updateSettings(resetSettings) {
 			document.getElementById(SCRIPT_NAME+'IS_ACTIVE_RETURN_AND_ACCEPT')
 		]
 		for (var i in el) { // simulate behaviour
-			if (el[i].checked != reset) {
-				el[i].click();
+			if (el[i]) {
+				if (el[i].checked != reset) {
+					el[i].click();
+				}
 			}
 		}
-		//document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP').value = '20';
 	}
 	
 	// IS_ACTIVE_IFRAME_HEIGHT
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_HEIGHT');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT = false;
+		}
 	}
 	
 	// IS_ACTIVE_IFRAME_WIDTH
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_WIDTH');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH = false;
+		}
 	}
 	
 	// IS_ACTIVE_IFRAME_OFFSET
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_OFFSET');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET = false;
+		}
 	}
 	
 	// IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT = false;
+		}
 	}
 	
 	// IS_ACTIVE_CAPTCHA_INPUT_FOCUS
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_INPUT_FOCUS');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_INPUT_FOCUS = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_INPUT_FOCUS = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_INPUT_FOCUS = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_INPUT_FOCUS = false;
+		}
 	}
 	
 	// IS_ACTIVE_CAPTCHA_DISPLAY_ALERT
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_DISPLAY_ALERT');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT = false;
+		}
 	}
 	
 	// IS_ACTIVE_CAPTCHA_AUDIO_ALERT
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_AUDIO_ALERT');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT = false;
+		}
 	}
 	
 	// IS_ACTIVE_RETURN_AND_ACCEPT
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_RETURN_AND_ACCEPT');
-	if (u.checked) {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT = true;
-	} else {
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT = false;
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT = true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT = false;
+		}
 	}
 	
 	// IFRAME_HEIGHT
 	u = document.getElementById(SCRIPT_NAME+'IFRAME_HEIGHT');
-	u = u.value.replace(/\D/g, '');
-	OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT = (u != '') ? u : 600;
+	if (u) {
+		u = u.value.replace(/\D/g, '');
+		OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_HEIGHT = (u != '') ? u : 6000;
+	}
 	
 	// IFRAME_OFFSET_TOP
 	u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
-	u = u.value.replace(/\D/g, '');
-	OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP = (u != '') ? u : 600;
+	if (u) {
+		u = u.value.replace(/\D/g, '');
+		OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP = (u != '') ? u : 24;
+	}
+	
+	// IFRAME_ENABLE_FULL_SCREEN
+	u = document.getElementById(SCRIPT_NAME+'IFRAME_ENABLE_FULL_SCREEN');
+	console.log(u);
+	if (u) {
+		if (u.checked) {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_ENABLE_FULL_SCREEN = true;
+			// Enable others
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT	= true;
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH	= true;
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET	= true;
+		} else {
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_ENABLE_FULL_SCREEN = false;
+			// Disable others
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_HEIGHT	= false;
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_WIDTH	= false;
+			OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET	= false;
+		}
+	}
 	
 	// CAPTCHA_AUDIO_SNIPPET
 	u = document.getElementById(SCRIPT_NAME+'CAPTCHA_AUDIO_SNIPPET');
-	OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET = u.value;
+	if (u) {
+		OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET = u.value;
+	}
 	
 	// Save
 	saveLocalStorage();
@@ -1592,11 +1630,10 @@ function updateSettings(resetSettings) {
  * 
  */
 function saveLocalStorage() {
-	
 	var u = JSON.stringify(OBJECT_MT_TOOLS_LOCAL_STORAGE);
 	GM_setValue('OBJECT_MT_TOOLS_LOCAL_STORAGE'+SCRIPT_NAME, u);
-	
 }
+
 /**
  * function events_listener_captcha
  * 
@@ -1790,6 +1827,7 @@ function checkPlayCaptchaAudio() {
 	// Set 10s timeout.
 	window.setTimeout(checkPlayCaptchaAudio, 10000);
 }
+
 /**
  * function storage_events_listener
  * 
@@ -1826,6 +1864,7 @@ function storage_events_listener(event) {
 		return;
 	}
 }
+
 /**
  * Function modifyIframe
  * 
@@ -1891,13 +1930,14 @@ function modifyIframe(el_iframe) {
 			document.body.innerHTML.indexOf(s4) == -1 && // test
 			
 			// Contains
-			document.body.innerHTML.indexOf(s5) != -1 && //&& 0 == 1 // TESTING
+			document.body.innerHTML.indexOf(s5) != -1 //&& //&& 0 == 1 // TESTING
 			
 			// Not yet on page.
-			!document.getElementById(SCRIPT_NAME+'div_hold_iframe')
+			//~ !document.getElementById(SCRIPT_NAME+'div_hold_iframe')
 			)
 		{
 			document.body.insertBefore(div_iframe, document.body.firstChild);
+			div_iframe.style.marginTop = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px'; // Set margin top
 			
 			// Move info bar to top.
 			var detail = document.getElementsByClassName('container-fluid project-detail-bar')[0];
@@ -1906,9 +1946,13 @@ function modifyIframe(el_iframe) {
 			detail.setAttribute('style',
 				'position:absolute;top:0;left:0;width:50%;padding:0!important; padding-left:0!important; padding-right:0!important; padding-top:0!important; padding-bottom:0!important;'
 			);
-			GM_addStyle('#'+SCRIPT_NAME+'div_tools div, #'+SCRIPT_NAME+'div_tools span {\
+			GM_addStyle(
+				'#'+SCRIPT_NAME+'div_tools div,  \
+				 #'+SCRIPT_NAME+'div_tools span {\
 				padding:0!important; padding-left:0!important; padding-right:0!important; padding-top:0!important; padding-bottom:0!important;\
 			}');
+			
+			
 			
 			//~ document.body.insertBefore(document.body.firstChild, div_iframe);
 			//~ document.body.appendChild(div_iframe.parentNode.parentNode.parentNode);
@@ -2029,8 +2073,8 @@ function applySettings() {
 			
 			// This will fire an event in all other tabs.
 			// But not this tab.
-			//
-			localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_alert_'+SCRIPT_NAME] = true; // This will only fire once per CAPTCHA "session".
+			// This will only fire once per CAPTCHA "session".
+			localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_alert_'+SCRIPT_NAME] = true;
 			
 			// So fire a faux event
 			// This in turn runs events_listener_captcha()
@@ -2099,9 +2143,6 @@ function applySettings() {
 				i.click(); 
 			}
 		}
-		//~ var i = document.getElementsByName("autoAcceptEnabled");
-		//~ if (i[0])
-			//~ i[0].checked = true;
 	}
 	
 	// IS_ACTIVE_CAPTCHA_INPUT_FOCUS
@@ -2121,7 +2162,7 @@ function applySettings() {
 	
 	// IS_ACTIVE_RETURN_AND_ACCEPT (inside tools)
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT) {
-		/*
+		/**
 		 * Job is returnable?
 		 * Job is returnable if one of these two links are on the page.
 		 */
@@ -2162,14 +2203,12 @@ function applySettings() {
 					-moz-border-radius:0 0 4px 4px;\
 					border-radius:0 0 4px 4px;\
 					cursor:pointer;',
-						//radius->tl,tr,br,bl
-						//'style':'width:120px;height:26px;margin-left:4px;',
 				'id':SCRIPT_NAME+'btn_raa',
 				'value':'Return and Accept!'
 		});
 		tools.appendChild(u);
 		
-		/*
+		/**
 		 * RETURN_AND_ACCEPT actions
 		 */
 		u.onclick = function() {
@@ -2270,15 +2309,16 @@ function load()
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'div_tools {\
 			position:absolute;\
+			overflow:hidden;\
 			top:0;\
 			left:0;\
 			width:100%;\
 			padding:0;\
 			z-index:10000;\
 			text-align:right;\
-			background-color:#efefef;\
+			border-bottom:1px solid #aaccaa\
 		}'
-	);
+	);//background-color:#efefef;\
 	
 	/**
 	 * Style for btn_show_menu.
@@ -2296,18 +2336,6 @@ function load()
 			cursor:pointer;\
 			background:url(\'data:image/png;base64,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\')\
 		}'
-		
-		
-		//~ '#'+SCRIPT_NAME+'btn_show_menu {\
-			//~ width:60px;\
-			//~ margin:0;\
-			//~ padding:0;\
-			//~ margin-top:-1px;\
-			//~ -moz-border-radius:0 0 4px 4px;\
-			//~ border-radius:0 0 4px 4px;\
-			//~ \
-			//~ cursor:pointer;\
-		//~ }'
 	);
 	
 	/**
