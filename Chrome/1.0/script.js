@@ -110,7 +110,7 @@ function initial_tool_settings() {
 		
 		'IFRAME_HEIGHT': 6000,
 		
-		'IFRAME_OFFSET_TOP': 24,
+		'IFRAME_OFFSET_TOP': 20,
 		
 		'IFRAME_ENABLE_FULL_SCREEN': true,
 		
@@ -285,7 +285,7 @@ function sanitize(obj) {
 		obj.IFRAME_HEIGHT = 6000;
 	}
 	if (!obj.hasOwnProperty('IFRAME_OFFSET_TOP')) {
-		obj.IFRAME_OFFSET_TOP = 24;
+		obj.IFRAME_OFFSET_TOP = 20;
 	}
 	if (!obj.hasOwnProperty('IFRAME_ENABLE_FULL_SCREEN')) {
 		obj.IFRAME_ENABLE_FULL_SCREEN = true;
@@ -354,7 +354,7 @@ function hideMenu() {
 	
 	u = document.getElementById(SCRIPT_NAME+'btn_show_menu');
 	if (u)
-		document.getElementById(SCRIPT_NAME+'btn_show_menu').style.display = 'inline';
+		u.style.display = 'inline';
 }
 
 function generate_container_basic(theMenu) {
@@ -660,8 +660,9 @@ function generate_containers_advanced(theMenu) {
 	u = el({
 		'create':'div',
 		'style':'width:100%;font-weight:bold;',
-		'innerText':'Options for full-screen mode.'
+		'innerText':'Options for full-screen mode'
 	});
+	theMenu.appendChild(u);
 	
 	/**
 	 * Modify height of job window
@@ -717,7 +718,7 @@ function generate_containers_advanced(theMenu) {
 		'create':'div',
 		'class':SCRIPT_NAME+'m2'
 	});
-	u2 = 'Height of job window (in pixels).';
+	u2 = 'Height of job window (# pixels)';
 	u.appendChild(document.createTextNode(u2));
 	u2 = el({
 		'create':'img',
@@ -812,7 +813,7 @@ function generate_containers_advanced(theMenu) {
 		'create':'div',
 		'class':SCRIPT_NAME+'m2'
 	});
-	u2 = 'Distance of job window from top of page (in pixels).';
+	u2 = 'Distance of job window from top of page (# pixels)';
 	u.appendChild(document.createTextNode(u2));
 	u2 = el({
 		'create':'img',
@@ -1174,6 +1175,7 @@ function showMenu(show_advanced_menu = false) {
 	 */
 	showMenu_applyActions();
 }
+
 /**
  * function showMenu_applyActions
  * 
@@ -1181,6 +1183,13 @@ function showMenu(show_advanced_menu = false) {
 function showMenu_applyActions() {
 	
 	var u, x;
+	
+	/**
+	 * IFRAME_ENABLE_FULL_SCREEN
+	 */
+	u = document.getElementById(SCRIPT_NAME+'IFRAME_ENABLE_FULL_SCREEN');
+	if (u)
+		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_ENABLE_FULL_SCREEN;
 	
 	/**
 	 * IFRAME_HEIGHT/IFRAME_OFFSET_TOP
@@ -1208,8 +1217,7 @@ function showMenu_applyActions() {
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_HEIGHT');
 	if (u) {
 		u.onchange = function() {
-			var u;
-			u = document.getElementById(SCRIPT_NAME+'IFRAME_HEIGHT');
+			var u = document.getElementById(SCRIPT_NAME+'IFRAME_HEIGHT');
 			if (this.checked) {
 				u.disabled = false;
 				u.style.backgroundColor = '#fff';
@@ -1227,8 +1235,7 @@ function showMenu_applyActions() {
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_IFRAME_OFFSET');
 	if (u) {
 		u.onchange = function() {
-			var u;
-			u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
+			var u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
 			if (this.checked) {
 				u.disabled = false;
 				u.style.backgroundColor = '#fff';
@@ -1294,7 +1301,6 @@ function showMenu_applyActions() {
 	u = document.getElementsByClassName(SCRIPT_NAME+'m1'); // m1 (left)
 	for (var i in u) {
 		u[i].onmouseover = function() {
-			var u;
 			this.style.backgroundColor = '#efdefe';
 			this.nextSibling.style.backgroundColor = '#efdefe';
 		}
@@ -1441,7 +1447,7 @@ function showMenu_applyActions() {
 		// Hide the tools button.
 		var u = document.getElementById(SCRIPT_NAME+'btn_show_menu');
 		if (u)
-			document.getElementById(SCRIPT_NAME+'btn_show_menu').style.display = 'none';
+			u.style.display = 'none';
 	}
 	
 	/**
@@ -1588,12 +1594,11 @@ function updateSettings(resetSettings) {
 	u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
 	if (u) {
 		u = u.value.replace(/\D/g, '');
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP = (u != '') ? u : 24;
+		OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP = (u != '') ? u : 20;
 	}
 	
 	// IFRAME_ENABLE_FULL_SCREEN
 	u = document.getElementById(SCRIPT_NAME+'IFRAME_ENABLE_FULL_SCREEN');
-	console.log(u);
 	if (u) {
 		if (u.checked) {
 			OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_ENABLE_FULL_SCREEN = true;
@@ -1940,68 +1945,82 @@ function modifyIframe(el_iframe) {
 			div_iframe.style.marginTop = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px'; // Set margin top
 			
 			// Move info bar to top.
-			var detail = document.getElementsByClassName('container-fluid project-detail-bar')[0];
-			document.getElementById(SCRIPT_NAME+'div_tools')
-				.appendChild(detail);
-			detail.setAttribute('style',
-				'position:absolute;top:0;left:0;width:50%;padding:0!important; padding-left:0!important; padding-right:0!important; padding-top:0!important; padding-bottom:0!important;'
-			);
+			var detail, timer, hd, rwd, aa;
+			detail = document.getElementsByClassName('container-fluid project-detail-bar');
+			if (detail){
+				timer = detail[0].getElementsByClassName('completion-timer p-a-xs');
+				if (timer) {
+					// In order to not break timer, necessary to move
+					// timer's parentNode.
+					tools.add_item(timer[0].parentNode);
+				}
+				hd = detail[0].getElementsByTagName('a');
+				if (hd && hd[0].innerText.trim() == 'HIT Details') {
+					tools.add_item(hd[0].parentNode);
+				}
+				rwd = detail[0].getElementsByClassName('detail-bar-label');
+				if (rwd) {
+					for (var i=0; i<rwd.length; i++) {
+						console.log(rwd[i]);
+						console.log(rwd[i].parentNode);
+						if (rwd[i].innerText.trim() == 'Reward:') {
+							// Copy text to menu.
+							tools.add_item(document.createTextNode(rwd[i].parentNode.innerText.trim()));
+							break;
+						}
+					}
+				}
+				aa = detail[0].getElementsByTagName('input');
+				if (aa && aa[0].parentNode.innerText.trim() == 'Auto-accept next HIT') {
+					tools.add_item(aa[0].parentNode);
+				}
+			}
+			
 			GM_addStyle(
 				'#'+SCRIPT_NAME+'div_tools div,  \
 				 #'+SCRIPT_NAME+'div_tools span {\
 				padding:0!important; padding-left:0!important; padding-right:0!important; padding-top:0!important; padding-bottom:0!important;\
 			}');
 			
-			
-			
-			//~ document.body.insertBefore(document.body.firstChild, div_iframe);
-			//~ document.body.appendChild(div_iframe.parentNode.parentNode.parentNode);
-			//~ document.getElementById('e3DbjxI0oLqiV6emR9bnWz2pXdibP5usIne0MlOc7mDdiv_tools').appendChild(div_iframe);
-			//~ div_iframe.style.position = 'absolute';
-			//~ // Make div
-			//~ var u = el({
-				//~ 'create':'div',
-				//~ 'style':'position:absolute;top:'+OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px;left:0;',
-				//~ 'id': SCRIPT_NAME+'div_hold_iframe'
-			//~ });
-			//~ document.body.appendChild(u);
-			//~ u.appendChild(div_iframe);
-			//~ div_iframe.style.backgroundColor = '#fff'; // iframe transparency
-			//~ div_iframe.style.top = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP + 'px';
-			
 			// Frame is altered. Display [x] to reset.
 			var img_reset64;
 			var u;
 			img_reset64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAWCAYAAADEtGw7AAA\
-			ACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3QoNFCY6xFM0FwAABcFJRE\
-			FUOMtllVtsXEcZx39zbrveXV9ix971PZfacexEaZOQKgEpgobSxElT0pe0VaFCfkACRIVUygPpA0IginhoBYgqKu\
-			KFtgj1oXVSgUQrFYqiVGqIi2O7qZMmqW9J9uaz5\
-			+yey5wZHuyGUEb6NG+/+TT/b+YnWF9nR/oYn1vgtYKFX5RiYGy4RQp1iCR5TGu9y8xk+\
-			9EaWfdvCCGmtBCvmJbzTnX2Izcf5PSX8Zgc6eHY3BIAAuDMSD9H5z4F4I2hQqeTa57Idvf9qLD/QEvH6A7s5la0UugwQDYa\
-			+MtLVK/OU56ecoNS6eeqHpwen18sAUyO9HFsbgFxdqSf8XXomaGesUx///PdXzp4ZOCBryESSVytkHgesu6T\
-			+D6x75E0GmgpUU1NVD65QvXKx2+GlfKzR2cX5gDObOtd6xhgcqhnR+vWod9vOnL0C1279xKVyyh\
-			/Hbhe0q8j6z7S94m9GpHrIjJNRErhLi6ea5SKE8dmP53571VsKbRnBwZe3fLwiQfz9\
-			+3WUbEopO+R+B5JvY5s1O+A47pP7LpE7iqx7xF5Hto0tdnTK\
-			+q3br4V1GqPPzxzfdV4HrCac98s7Nv/YOfoDsLlJRGXi6gwwO4bRAtBXC4TrVaJVqsEy4toy6Tt4FeIG3Xqy0t4N66LxvVrpLsKRyzLeuJ1wPz\
-			+2NaN2e7C60OPPJpOyiWkW0UnCueeYdLbtmO1d+BfnqVx7Rr1T65AKk3/\
-			d39Ax1cPI9JNrM5cIvJqBOUSqe4etFL369bMaUMYPNS1a08bNZe4UkKWK5ideZzNW9Fo7O5eNowfJ7h9i0QrBn94iubdezEzGfq/MUH\
-			+2CNIKdG2Q+niv0jlCxtNwSHL0MmJDZs2E926ifQ8pO8RfXgBs6sLZ9NWkigk1TvA5ud+inBS5HbuQiAw000U33uXpb\
-			++hTIMtIbI98GyEUo9ain0mGlbxOUysrGeulej8YfTdJ58kvTQCJgm2bFdGI6NMC0MJ0Xp3HtcePrb1Fe\
-			W0EIglUahiaMQpdWYYaUyvbruE1crxJUycaVC7K5Sm55i/sfPUL/\
-			yMYbtYKQchJNC2A7V6Yt88J0J/OUlFAKpQGlFoiGqNzBsu8/\
-			QKlHS94krJeJqhahaJrh1i7BUglQas7kF4TgI28Fw1g5w2jowWlpQiVrrVCuSdbA2BEJrZSRhsBj5HlGlQlStEJbLBMUidv8A9/ziBbIjowjHwXBSa7vt0LxthH0v\
-			/5HcyCiJlOtQTaLAcBwSKRcMIcRMWKsRVYqElTJhqYjd08uWUz8jt/NehGVhpjO4s9PU5mY\
-			/e6i0je1k7wu/JTc8TCwTEq2RCdipNAguGcIwXnNLRWQQElZXkWFA6xcP0rJ7L4ZtYzY1UfngPOefOsm5J05QfP\
-			/8HXjnvgMUHniIREKSaKycg6kShGn9yXyyvW1ZRuFT2Z7eXOP6VZRh4l+7ikilad29h9v/ePdOUGG1yuLf\
-			/kLr2A6yff38+8VfMfPSr4mCABlB34H9iEpxMVb6GXO0WA062zO+1dY+bqiEyHWJfJ/VSx/SWFlh\
-			/ncv4i8uoIUgQRC6VVb++XeqV+eZeek31EsuWkNusEB7Po8q3X7ampo/L9Z\
-			+tr4NqY4NL+e68l8PLn+kG8XbQgFSSpRhoMTdI6WQSYKMQRmgEmjqatfdO3YKUSn+WZWKE4fnb7omwKtlNzjZmr2ohbg\
-			/1dPTq+KYoFpB2/bn5nQtfQUoQEbQPFCgsH27EJ57Lq653xufW1wGEHfb4+zo4JjVnPtlamPXYR3HlKYuEvoeCkj0eimQCVhZm\
-			/x9e8g4DqpcfFM2vGfHp2/MAUyO9v6/mia39bSadvq43dH+k3S+e1AJQRyFBDUPrTVWNouVSmFpjVxZuR5Vy6dkFL5x\
-			/PKS+z9q+rxMAR4DvnXvcGucyEMk8nGl9YjZlMlrrbUK6zfBmEUYr1ip9NvvX5hzn/vMQnfJ9D8JhDPTRZ/JowAAAABJRU5ErkJggg==';
+				ACXBIWXMAAA3XAAAN1wFCKJt4AAAAB3RJTUUH3QoNFCY6xFM0FwAABcFJRE\
+				FUOMtllVtsXEcZx39zbrveXV9ix971PZfacexEaZOQKgEpgobSxElT0pe0VaFCfkACRIVUygPpA0IginhoBYgqKu\
+				KFtgj1oXVSgUQrFYqiVGqIi2O7qZMmqW9J9uaz5\
+				+yey5wZHuyGUEb6NG+/+TT/b+YnWF9nR/oYn1vgtYKFX5RiYGy4RQp1iCR5TGu9y8xk+\
+				9EaWfdvCCGmtBCvmJbzTnX2Izcf5PSX8Zgc6eHY3BIAAuDMSD9H5z4F4I2hQqeTa57Idvf9qLD/QEvH6A7s5la0UugwQDYa\
+				+MtLVK/OU56ecoNS6eeqHpwen18sAUyO9HFsbgFxdqSf8XXomaGesUx///PdXzp4ZOCBryESSVytkHgesu6T\
+				+D6x75E0GmgpUU1NVD65QvXKx2+GlfKzR2cX5gDObOtd6xhgcqhnR+vWod9vOnL0C1279xKVyyh\
+				/Hbhe0q8j6z7S94m9GpHrIjJNRErhLi6ea5SKE8dmP53571VsKbRnBwZe3fLwiQfz9\
+				+3WUbEopO+R+B5JvY5s1O+A47pP7LpE7iqx7xF5Hto0tdnTK\
+				+q3br4V1GqPPzxzfdV4HrCac98s7Nv/YOfoDsLlJRGXi6gwwO4bRAtBXC4TrVaJVqsEy4toy6Tt4FeIG3Xqy0t4N66LxvVrpLsKRyzLeuJ1wPz\
+				+2NaN2e7C60OPPJpOyiWkW0UnCueeYdLbtmO1d+BfnqVx7Rr1T65AKk3/\
+				d39Ax1cPI9JNrM5cIvJqBOUSqe4etFL369bMaUMYPNS1a08bNZe4UkKWK5ideZzNW9Fo7O5eNowfJ7h9i0QrBn94iubdezEzGfq/MUH\
+				+2CNIKdG2Q+niv0jlCxtNwSHL0MmJDZs2E926ifQ8pO8RfXgBs6sLZ9NWkigk1TvA5ud+inBS5HbuQiAw000U33uXpb\
+				++hTIMtIbI98GyEUo9ain0mGlbxOUysrGeulej8YfTdJ58kvTQCJgm2bFdGI6NMC0MJ0Xp3HtcePrb1Fe\
+				W0EIglUahiaMQpdWYYaUyvbruE1crxJUycaVC7K5Sm55i/sfPUL/\
+				yMYbtYKQchJNC2A7V6Yt88J0J/OUlFAKpQGlFoiGqNzBsu8/\
+				QKlHS94krJeJqhahaJrh1i7BUglQas7kF4TgI28Fw1g5w2jowWlpQiVrrVCuSdbA2BEJrZSRhsBj5HlGlQlStEJbLBMUidv8A9/ziBbIjowjHwXBSa7vt0LxthH0v\
+				/5HcyCiJlOtQTaLAcBwSKRcMIcRMWKsRVYqElTJhqYjd08uWUz8jt/NehGVhpjO4s9PU5mY\
+				/e6i0je1k7wu/JTc8TCwTEq2RCdipNAguGcIwXnNLRWQQElZXkWFA6xcP0rJ7L4ZtYzY1UfngPOefOsm5J05QfP\
+				/8HXjnvgMUHniIREKSaKycg6kShGn9yXyyvW1ZRuFT2Z7eXOP6VZRh4l+7ikilad29h9v/ePdOUGG1yuLf\
+				/kLr2A6yff38+8VfMfPSr4mCABlB34H9iEpxMVb6GXO0WA062zO+1dY+bqiEyHWJfJ/VSx/SWFlh\
+				/ncv4i8uoIUgQRC6VVb++XeqV+eZeek31EsuWkNusEB7Po8q3X7ampo/L9Z\
+				+tr4NqY4NL+e68l8PLn+kG8XbQgFSSpRhoMTdI6WQSYKMQRmgEmjqatfdO3YKUSn+WZWKE4fnb7omwKtlNzjZmr2ohbg\
+				/1dPTq+KYoFpB2/bn5nQtfQUoQEbQPFCgsH27EJ57Lq653xufW1wGEHfb4+zo4JjVnPtlamPXYR3HlKYuEvoeCkj0eimQCVhZm\
+				/x9e8g4DqpcfFM2vGfHp2/MAUyO9v6/mia39bSadvq43dH+k3S+e1AJQRyFBDUPrTVWNouVSmFpjVxZuR5Vy6dkFL5x\
+				/PKS+z9q+rxMAR4DvnXvcGucyEMk8nGl9YjZlMlrrbUK6zfBmEUYr1ip9NvvX5hzn/vMQnfJ9D8JhDPTRZ/JowAAAABJRU5ErkJggg==';
 			u = el({//original 24x24
 					'create':'img',
-					'style':'float:right;width:20px;height:20px;margin:0;padding:0;vertical-align:middle;cursor:pointer;zoom:0.8em;',//margin-right:4px;
+					'style':'float:right;\
+						width:20px;\
+						height:20px;\
+						margin-top:5px;\
+						padding:0;\
+						vertical-align:middle;\
+						cursor:pointer;',
 					'src':img_reset64,
 					'id':SCRIPT_NAME+'btn_reset_once_iframe',
 					'alt':'Move <iframe> job window to original location?',
@@ -2134,9 +2153,9 @@ function applySettings() {
 	// IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT
 	// Changed, jan2018
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT) {
-		var i = document.querySelector('div.checkbox');
-		if (i) {
-			i = i.querySelector('input');
+		var i = document.querySelector('span.m-l-xs.detail-bar-value');
+		if (i && i.innerText == 'Auto-accept next HIT') {
+			i = i.parentNode.querySelector('input');
 			if (i && i.type == 'checkbox' && !i.checked) {
 				// Emulate a click. Calling .checked is not enough.
 				// That is, "i.checked = true;" does not work.
@@ -2195,7 +2214,7 @@ function applySettings() {
 				'type':'button',
 				'style':'\
 					width:120px;\
-					height:24px;\
+					height:20px;\
 					margin:0;\
 					padding:0;\
 					margin-left:4px;\
@@ -2347,6 +2366,22 @@ function load()
 	});
 	document.body.appendChild(u);
 	tools = document.getElementById(SCRIPT_NAME+'div_tools');
+	// Tools.add_item()
+	tools.add_item = function(html_element) {
+		var u = el({
+			'create':'div',
+			'id':'', //border collapse
+			'style':'float:right;\
+				height:28px;\
+				margin-left:-1px;\
+				border-left: 1px solid #a0a0a0;\
+				border-right:1px solid #a0a0a0;',
+			'class':''
+		});
+		u.appendChild(html_element);
+		// Add to tools div
+		this.appendChild(u);
+	}
 	
 	/**
 	 * btn_show_menu
