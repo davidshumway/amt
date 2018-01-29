@@ -1956,7 +1956,16 @@ function modifyIframe(el_iframe, top) {
 			)
 		{
 			document.body.insertBefore(div_iframe, document.body.firstChild);
-			div_iframe.style.marginTop = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px'; // Set margin top
+			
+			// Set margin top
+			div_iframe.style.marginTop = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px';
+			
+			// This is the other way to move the iframe.
+			// setAttribute allows for !important.
+			// But then it also removes other styling.
+			//~ div_iframe.setAttribute('style',
+				//~ 'margin-top:'+OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px !important;'
+			//~ );
 			
 			// This works on VSR.
 			// But it breaks others!
