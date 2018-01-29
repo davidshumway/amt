@@ -1872,13 +1872,25 @@ function storage_events_listener(event) {
 
 /**
  * Function modifyIframe
+ * Function to make iframe "full-screen".
  * 
+ * @param	top	Is not in an iframe but in #MainContent.
  */
-function modifyIframe(el_iframe) {
+function modifyIframe(el_iframe, top) {
+	var div_iframe;
+	//~ console.log(el_iframe);
+	if (!top) {
+		//~ console.log('not top!');
+		div_iframe = el_iframe.parentNode;
+	} else {
+		div_iframe = el_iframe;
+	}
 	
-	var div_iframe = el_iframe.parentNode;
-	
-	if (!div_iframe) return;
+	//~ console.log(div_iframe);
+	//~ if (!div_iframe) {
+		//~ div_iframe
+	//~ }
+	//~ if (!div_iframe) return;
 	
 	div_iframe.style.zIndex = 1;
 	
@@ -1916,12 +1928,13 @@ function modifyIframe(el_iframe) {
 	 * 
 	 */
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_IFRAME_OFFSET) {
-		var s1,s2,s3,s4,s5;
+		var s1,s2,s3,s4,s5,s6;
 		s1 = 'In order to accept your next HIT, please type this word into the text box below';
 		s2 = 'you were viewing could not be accepted';
 		s3 = 'The HIT you were viewing has expired';
 		s4 = 'Want to work on this HIT?';
 		s5 = 'Time Remaining:';
+		s6 = 'Time Elapsed';
 		if  (
 			// Do not move window when in preview mode. The one exception is when in "continue". Then check innerHTML for "Finished with this HIT?".
 			//
@@ -1934,8 +1947,9 @@ function modifyIframe(el_iframe) {
 			document.body.innerHTML.indexOf(s3) == -1 && // test
 			document.body.innerHTML.indexOf(s4) == -1 && // test
 			
-			// Contains
-			document.body.innerHTML.indexOf(s5) != -1 //&& //&& 0 == 1 // TESTING
+			// Contains either "time remaining" or "time elapsed"
+			(document.body.innerHTML.indexOf(s5) != -1 ||
+			 document.body.innerHTML.indexOf(s6) != -1)
 			
 			// Not yet on page.
 			//~ !document.getElementById(SCRIPT_NAME+'div_hold_iframe')
@@ -1943,6 +1957,13 @@ function modifyIframe(el_iframe) {
 		{
 			document.body.insertBefore(div_iframe, document.body.firstChild);
 			div_iframe.style.marginTop = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px'; // Set margin top
+			
+			// This works on VSR.
+			// But it breaks others!
+			// Whereas style.marginTop does NOT work on VSR!
+			//~ div_iframe.setAttribute('style',
+				//~ 'margin-top:'+OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px !important;'
+			//~ );
 			
 			// Move info bar to top.
 			var detail, timer, hd, rwd, aa;
@@ -1972,7 +1993,13 @@ function modifyIframe(el_iframe) {
 				}
 				aa = detail[0].getElementsByTagName('input');
 				if (aa && aa[0].parentNode.innerText.trim() == 'Auto-accept next HIT') {
-					tools.add_item(aa[0].parentNode);
+					// Just aa[0].parentNode is necessary in order
+					// to move this element to the right place.
+					// However, aa[0].parentNode.parentNode.parentNode
+					// is necessary in order for the form to work
+					// correctly.
+					//~ tools.add_item(aa[0].parentNode);
+					tools.add_item(aa[0].parentNode.parentNode.parentNode);
 				}
 			}
 			
@@ -2013,18 +2040,18 @@ function modifyIframe(el_iframe) {
 				/x9e8g4DqpcfFM2vGfHp2/MAUyO9v6/mia39bSadvq43dH+k3S+e1AJQRyFBDUPrTVWNouVSmFpjVxZuR5Vy6dkFL5x\
 				/PKS+z9q+rxMAR4DvnXvcGucyEMk8nGl9YjZlMlrrbUK6zfBmEUYr1ip9NvvX5hzn/vMQnfJ9D8JhDPTRZ/JowAAAABJRU5ErkJggg==';
 			u = el({//original 24x24
-					'create':'img',
-					'style':'float:right;\
-						width:20px;\
-						height:20px;\
-						margin-top:5px;\
-						padding:0;\
-						vertical-align:middle;\
-						cursor:pointer;',
-					'src':img_reset64,
-					'id':SCRIPT_NAME+'btn_reset_once_iframe',
-					'alt':'Move <iframe> job window to original location?',
-					'title':'Move <iframe> job window to original location?'
+				'create':'img',
+				'style':'float:right;\
+					width:20px;\
+					height:20px;\
+					margin-top:5px;\
+					padding:0;\
+					vertical-align:middle;\
+					cursor:pointer;',
+				'src':img_reset64,
+				'id':SCRIPT_NAME+'btn_reset_once_iframe',
+				'alt':'Move <iframe> job window to original location?',
+				'title':'Move <iframe> job window to original location?'
 			});
 			u.onclick = function() {
 				this.style.cursor = '';
@@ -2148,6 +2175,10 @@ function applySettings() {
 	var iframe = document.querySelector('iframe.embed-responsive-item');
 	if (iframe) {
 		modifyIframe(iframe);
+	} else {
+		// This is the "top window" type of task.
+		// No iframe is used.
+		modifyIframe(document.getElementById('MainContent'), true);
 	}
 	
 	// IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT
@@ -2159,7 +2190,7 @@ function applySettings() {
 			if (i && i.type == 'checkbox' && !i.checked) {
 				// Emulate a click. Calling .checked is not enough.
 				// That is, "i.checked = true;" does not work.
-				i.click(); 
+				i.click();
 			}
 		}
 	}
@@ -2201,14 +2232,12 @@ function applySettings() {
 			return;
 		}
 		
-		var u;
-		var u2;
-		
 		/**
 		 * RETURN_AND_ACCEPT button
 		 * 
 		 * 5 Sep 2014, cursor:pointer
 		 */
+		var u;
 		u = el({
 				'create':'input',
 				'type':'button',
@@ -2226,10 +2255,6 @@ function applySettings() {
 				'value':'Return and Accept!'
 		});
 		tools.appendChild(u);
-		
-		/**
-		 * RETURN_AND_ACCEPT actions
-		 */
 		u.onclick = function() {
 			
 			this.style.backgroundColor = 'LightGreen';
