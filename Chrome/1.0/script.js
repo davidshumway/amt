@@ -110,7 +110,7 @@ function initial_tool_settings() {
 		
 		'IFRAME_HEIGHT': 6000,
 		
-		'IFRAME_OFFSET_TOP': 20,
+		'IFRAME_OFFSET_TOP': 30,
 		
 		'IFRAME_ENABLE_FULL_SCREEN': true,
 		
@@ -285,7 +285,7 @@ function sanitize(obj) {
 		obj.IFRAME_HEIGHT = 6000;
 	}
 	if (!obj.hasOwnProperty('IFRAME_OFFSET_TOP')) {
-		obj.IFRAME_OFFSET_TOP = 20;
+		obj.IFRAME_OFFSET_TOP = 30;
 	}
 	if (!obj.hasOwnProperty('IFRAME_ENABLE_FULL_SCREEN')) {
 		obj.IFRAME_ENABLE_FULL_SCREEN = true;
@@ -1594,7 +1594,7 @@ function updateSettings(resetSettings) {
 	u = document.getElementById(SCRIPT_NAME+'IFRAME_OFFSET_TOP');
 	if (u) {
 		u = u.value.replace(/\D/g, '');
-		OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP = (u != '') ? u : 20;
+		OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP = (u != '') ? u : 30;
 	}
 	
 	// IFRAME_ENABLE_FULL_SCREEN
@@ -2369,6 +2369,7 @@ function load()
 	/**
 	 * Style for btn_show_menu.
 	 * Click shows tools.
+	 * Note: 60% of 45px is 27px.
 	 */
 	GM_addStyle(
 		'#'+SCRIPT_NAME+'btn_show_menu {\
