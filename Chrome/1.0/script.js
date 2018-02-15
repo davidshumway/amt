@@ -50,7 +50,21 @@ var INTV_blink__sr_status = true;
 // Global vars object.
 var globals = {
 	original_title: null, // This is what the title is before changing to "CAPTCHA" (if CAPTCHA notification is turned on).
-	c_phrase: 'In order to accept your next HIT, please type this word into the text box below' // Shows on pages where there is a CAPTCHA
+	c_phrase: 'In order to accept your next HIT, please type this word into the text box below', // Shows on pages where there is a CAPTCHA
+	elements: {
+		// globals.elements.chkbox_auto_accept
+		chkbox_auto_accept: document.querySelector('span.m-l-xs.detail-bar-value')
+	}
+}
+// Set checkbox
+if (globals.elements.chkbox_auto_accept && 
+	globals.elements.chkbox_auto_accept.innerText == 'Auto-accept next HIT') {
+	globals.elements.chkbox_auto_accept =
+		globals.elements.chkbox_auto_accept.parentNode.querySelector('input');
+	if (!globals.elements.chkbox_auto_accept ||
+		globals.elements.chkbox_auto_accept.type != 'checkbox') {
+		globals.elements.chkbox_auto_accept = null
+	}
 }
 
 /**
@@ -1877,10 +1891,10 @@ function storage_events_listener(event) {
  * @param	top	Is not in an iframe but in #MainContent.
  */
 function modifyIframe(el_iframe, top) {
-	var div_iframe;
-	//~ console.log(el_iframe);
+	var div_iframe,
+		class_success = 'mturk-alert mturk-alert-success'; // classname of div with success text
+	
 	if (!top) {
-		//~ console.log('not top!');
 		div_iframe = el_iframe.parentNode;
 	} else {
 		div_iframe = el_iframe;
@@ -1957,26 +1971,38 @@ function modifyIframe(el_iframe, top) {
 		{
 			document.body.insertBefore(div_iframe, document.body.firstChild);
 			
-			// Set margin top
-			div_iframe.style.marginTop = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px';
-			
-			// This is the other way to move the iframe.
-			// setAttribute allows for !important.
-			// But then it also removes other styling.
-			//~ div_iframe.setAttribute('style',
-				//~ 'margin-top:'+OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px !important;'
-			//~ );
+			if (document.getElementsByTagName('iframe').length != 0) {
+				// Set margin top
+				div_iframe.style.marginTop = OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px';
+			} else {			
+				// This is the other way to move the iframe.
+				// setAttribute allows for !important.
+				// But then it also removes other styling.
+				div_iframe.setAttribute('style',
+					'margin-top:'+OBJECT_MT_TOOLS_LOCAL_STORAGE.IFRAME_OFFSET_TOP+'px !important;'
+				);
+				// This is a "top window" task.
+				// When submitted, an alert appears. In "full-screen"
+				// mode, move this alert to page bottom.
+				var as = document.getElementsByClassName(class_success);
+				if (as) {
+					document.body.appendChild(as);
+				}
+			}
 			
 			// Move info bar to top.
-			var detail, timer, hd, rwd, aa;
-			detail = document.getElementsByClassName('container-fluid project-detail-bar');
-			if (detail){
+			var detail = document.getElementsByClassName('container-fluid project-detail-bar'),
+				timer, hd, rwd, aa;
+			if (detail) {
 				timer = detail[0].getElementsByClassName('completion-timer p-a-xs');
-				if (timer) {
-					// In order to not break timer, necessary to move
-					// timer's parentNode.
-					tools.add_item(timer[0].parentNode);
+				if (timer && timer.length) {
+					
+				} else {
+					timer = detail[0].getElementsByClassName('completion-timer');
 				}
+				// In order to not break timer, necessary to move
+				// timer's parentNode.
+				tools.add_item(timer[0].parentNode);
 				hd = detail[0].getElementsByTagName('a');
 				if (hd && hd[0].innerText.trim() == 'HIT Details') {
 					tools.add_item(hd[0].parentNode);
@@ -1986,13 +2012,45 @@ function modifyIframe(el_iframe, top) {
 					for (var i=0; i<rwd.length; i++) {
 						console.log(rwd[i]);
 						console.log(rwd[i].parentNode);
-						if (rwd[i].innerText.trim() == 'Reward:') {
+						if (rwd[i].innerText.trim() == 'Reward:' ||
+							rwd[i].innerText.trim() == 'Reward' // Hm?
+							) {
 							// Copy text to menu.
 							tools.add_item(document.createTextNode(rwd[i].parentNode.innerText.trim()));
 							break;
 						}
 					}
 				}
+				//~ // globals.elements.chkbox_auto_accept
+				//~ // Test:
+				//~ // 		var x=document.createElement('input');
+				//~ //		document.body.appendChild(x);
+				//~ //		x.id='abc';
+				//~ //		var y=document.createElement('label');
+				//~ //		y.htmlFor = 'abc';
+				//~ //		y.innerText = 'click';
+				//~ //		document.body.appendChild(y);
+				//~ var lbl_auto_accpt = document.createElement('label'),
+					//~ chk_auto_accpt = document.createElement('input'),
+					//~ spn_auto_accpt = document.createElement('span');
+				//~ spn_auto_accpt.appendChild(chk_auto_accpt);
+				//~ spn_auto_accpt.appendChild(lbl_auto_accpt);
+				//~ chk_auto_accpt.id		= SCRIPT_NAME+'chk_auto_accpt';
+				//~ chk_auto_accpt.type		= 'checkbox';
+				//~ lbl_auto_accpt.htmlFor	= SCRIPT_NAME+'chk_auto_accpt';
+				//~ lbl_auto_accpt.innerText= 'Auto-accept next HIT';
+				//~ lbl_auto_accpt.style.cursor = 'pointer';
+				//~ chk_auto_accpt.addEventListener('change', function() {
+					//~ // Hide to avoid scrollIntoView
+					//~ globals.elements.chkbox_auto_accept.style.display = 'none';
+					//~ // Change checked status of auto accept.
+					//~ globals.elements.chkbox_auto_accept.click();
+					//~ // Un-Hide
+					//~ globals.elements.chkbox_auto_accept.style.display = 'block';
+				//~ }, false);
+				//~ tools.add_item(spn_auto_accpt);
+				
+				// old
 				aa = detail[0].getElementsByTagName('input');
 				if (aa && aa[0].parentNode.innerText.trim() == 'Auto-accept next HIT') {
 					// Just aa[0].parentNode is necessary in order
@@ -2000,7 +2058,6 @@ function modifyIframe(el_iframe, top) {
 					// However, aa[0].parentNode.parentNode.parentNode
 					// is necessary in order for the form to work
 					// correctly.
-					//~ tools.add_item(aa[0].parentNode);
 					tools.add_item(aa[0].parentNode.parentNode.parentNode);
 				}
 			}
@@ -2186,15 +2243,36 @@ function applySettings() {
 	// IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT
 	// Changed, jan2018
 	if (OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT) {
-		var i = document.querySelector('span.m-l-xs.detail-bar-value');
-		if (i && i.innerText == 'Auto-accept next HIT') {
-			i = i.parentNode.querySelector('input');
-			if (i && i.type == 'checkbox' && !i.checked) {
-				// Emulate a click. Calling .checked is not enough.
-				// That is, "i.checked = true;" does not work.
-				i.click();
-			}
+		if (globals.elements.chkbox_auto_accept) {
+			// enable
+			// Set display to none to avoid scrollIntoView.
+			// Then un-hide.
+			//~ globals.elements.chkbox_auto_accept.style.display = 'none';
+			if (!globals.elements.chkbox_auto_accept.checked)
+				globals.elements.chkbox_auto_accept.click();
+			setTimeout(function() {
+				if (!globals.elements.chkbox_auto_accept.checked)
+					globals.elements.chkbox_auto_accept.click();
+				setTimeout(function() {
+					if (!globals.elements.chkbox_auto_accept.checked)
+						globals.elements.chkbox_auto_accept.click();
+				}, 100);
+			}, 100);
+			//~ globals.elements.chkbox_auto_accept.style.display = 'block';
 		}
+		// Old
+		//~ var i = globals.elements.chkbox_auto_accept;
+		//~ if (i && i.innerText == 'Auto-accept next HIT') {
+			//~ i = i.parentNode.querySelector('input');
+			//~ if (i && i.type == 'checkbox' && !i.checked) {
+				//~ // Emulate a click. Calling .checked is not enough.
+				//~ // That is, "i.checked = true;" does not work.
+				//~ // THIS DOES NOT WORK FOR TOP WINDOW JOBS.
+				//~ // PROBABLY BECAUSE IT MOVES THE INPUT OUTSIDE
+				//~ // OF THE SUBMIT FORM.
+				//~ i.click();
+			//~ }
+		//~ }
 	}
 	
 	// IS_ACTIVE_CAPTCHA_INPUT_FOCUS
