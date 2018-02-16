@@ -563,7 +563,7 @@ function generate_container_basic(theMenu) {
 		'create':'img',
 		'src':img_info64,
 		'class':SCRIPT_NAME+'img_info',
-		'alt':'Opens new windows for this task.'
+		'alt':'Opens new windows for this task. Range: 1-25. (Note that users are limited to 25 accepted tasks.)'
 	});
 	u.appendChild(u2);
 	// Append right div
