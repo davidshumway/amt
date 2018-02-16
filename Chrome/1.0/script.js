@@ -466,9 +466,6 @@ function generate_container_basic(theMenu) {
 	 * Nice overview of slider here:
 	 * 		http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
 	 */
-	/**
-	 * Turn off auto-accept next job
-	 */
 	u = el({
 		'create':'div',
 		'class':SCRIPT_NAME+'m1'
