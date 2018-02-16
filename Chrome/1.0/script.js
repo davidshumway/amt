@@ -459,6 +459,118 @@ function generate_container_basic(theMenu) {
 	u.appendChild(u2);
 	// Append right div
 	theMenu.appendChild(u);
+	
+	/**
+	 * Open N Windows
+	 * 
+	 * Nice overview of slider here:
+	 * 		http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
+	 */
+	/**
+	 * Turn off auto-accept next job
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'range',
+		'id':SCRIPT_NAME+'OPEN_WINDOWS'
+	});
+	u2.min = 1;
+	u2.max = 25;
+	u2.value = 1;
+	u2.oninput = function() {
+		if (this.value == 1)
+			document.getElementById(SCRIPT_NAME+'open_windows').value = 
+				'Open and accept one task!';
+		else
+			document.getElementById(SCRIPT_NAME+'open_windows').value = 
+				'Open and accept '+this.value+' tasks!';
+	}
+	GM_addStyle('input[type="range"]:hover {cursor:pointer;}');
+	// Tick marks are not yet supported.
+	//	//GM_addStyle(
+	//	//	//https://stackoverflow.com/questions/26612700/ticks-for-type-range-html-input#26613443
+	//	//	'input[type="range"]:-moz-range-track {\
+	//	//	padding: 0 10px;\
+	//	//	background: repeating-linear-gradient(to right, \
+	//	//		#ccc, \
+	//	//		#ccc 10%, \
+	//	//		#000 10%, \
+	//	//		#000 11%, \
+	//	//		#ccc 11%, \
+	//	//		#ccc 20%);\
+	//	//	}'
+	//	//);
+	//	//var u3 = el({
+	//	//	'create':'datalist',
+	//	//	'id':SCRIPT_NAME+'numsettings'
+	//	//});
+	//	//for (var i=1; i<=25; i++) {
+	//	//	var opt = document.createElement('option');
+	//	//	opt.innerText = i;
+	//	//	u3.appendChild(opt);
+	//	//}
+	//	//u.appendChild(u3);
+	//	//u2.list = SCRIPT_NAME+'numsettings';
+	var u3 = el({
+		'create':'datalist',
+		// 'id':SCRIPT_NAME+'numsettings' // Not yet supported
+	});
+	for (var i=1; i<=25; i++) {
+		var opt = document.createElement('option');
+		opt.innerText = i;
+		u3.appendChild(opt);
+	}
+	u.appendChild(u3);
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	// Right column
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'button',
+		'id':SCRIPT_NAME+'open_windows',
+		'value':'Open and accept one task!',
+		'class':SCRIPT_NAME+'clickable_btn'
+	});
+	u.appendChild(u2);
+	u2.onclick = function() {
+		// Opens N windows.
+		// 
+		// Utilizing delay to guard against aggressive access
+		// to the AMT website.
+		// Test this with window.open(j[0]) rather than
+		// window.open(j[0]+'/accept_random').
+		var h = /https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks/,
+			j, countIntv = 0, intvOpen
+			numWindows = document.getElementById(SCRIPT_NAME+'OPEN_WINDOWS').value;
+			if (j = h.exec(document.location.href)) {
+				intvOpen = window.setInterval(function() {
+					if (countIntv < numWindows) {
+						countIntv++;
+						window.open(j[0]+'/accept_random');
+					} else {
+						clearInterval(intvOpen);
+					}
+				}, 100);
+			}
+	}
+	// Information icon
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'Opens new windows for this task.'
+	});
+	u.appendChild(u2);
+	// Append right div
+	theMenu.appendChild(u);
 	// Spacer
 	u = el({
 		'create':'hr',
