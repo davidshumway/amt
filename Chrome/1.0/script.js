@@ -421,6 +421,11 @@ function generate_container_basic(theMenu) {
 	u2 = '"Automatically accept the next HIT" checkbox always enabled';
 	u.appendChild(document.createTextNode(u2));
 	theMenu.appendChild(u);
+	// Spacer
+	u = el({
+		'create':'hr',
+	});
+	theMenu.appendChild(u);
 	
 	/**
 	 * Turn off auto-accept next job
@@ -1046,7 +1051,7 @@ function showMenu(show_advanced_menu = false) {
 		'create':'h2',
 		'style':'width:100%;margin-top:4px;margin-bottom:4px;'
 	});
-	u2 = 'Tools for Amazon\'s Mechanical Turk';
+	u2 = 'Tools for Amazon\'s Mechanical Turk (beta)';
 	u.appendChild(document.createTextNode(u2));
 	theMenu.appendChild(u);
 	u = el({
@@ -1892,7 +1897,8 @@ function storage_events_listener(event) {
  */
 function modifyIframe(el_iframe, top) {
 	var div_iframe,
-		class_success = 'mturk-alert mturk-alert-success'; // classname of div with success text
+		// classname of div with success text
+		class_success = 'mturk-alert mturk-alert-success';
 	
 	if (!top) {
 		div_iframe = el_iframe.parentNode;
@@ -1985,15 +1991,15 @@ function modifyIframe(el_iframe, top) {
 				// When submitted, an alert appears. In "full-screen"
 				// mode, move this alert to page bottom.
 				var as = document.getElementsByClassName(class_success);
-				if (as) {
-					document.body.appendChild(as);
+				if (as && as.length) {
+					document.body.appendChild(as[0]);
 				}
 			}
 			
 			// Move info bar to top.
 			var detail = document.getElementsByClassName('container-fluid project-detail-bar'),
 				timer, hd, rwd, aa;
-			if (detail) {
+			if (detail) {console.log('found bar');
 				timer = detail[0].getElementsByClassName('completion-timer p-a-xs');
 				if (timer && timer.length) {
 					
