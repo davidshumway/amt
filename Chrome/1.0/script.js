@@ -465,6 +465,9 @@ function generate_container_basic(theMenu) {
 	 * 
 	 * Nice overview of slider here:
 	 * 		http://thenewcode.com/757/Playing-With-The-HTML5-range-Slider-Input
+	 * 
+	 * Todo: Add message about "Disable pop up blocking".
+	 * Todo: Consider Chrome/Mozilla api to disable switching to new tab.
 	 */
 	u = el({
 		'create':'div',
