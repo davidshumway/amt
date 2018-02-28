@@ -1046,7 +1046,7 @@ function showMenu(show_advanced_menu = false) {
 			position:absolute;\
 			top:8px;\
 			left:50%;\
-			margin-left:-280px;\
+			margin-left:-400px;\
 			width:800px;\
 			height:740px;\
 			padding:0px 8px 0px 8px;\
