@@ -49,12 +49,18 @@ var INTV_blink__sr_status = true;
 
 // Global vars object.
 var globals = {
-	original_title: null, // This is what the title is before changing to "CAPTCHA" (if CAPTCHA notification is turned on).
-	c_phrase: 'In order to accept your next HIT, please type this word into the text box below', // Shows on pages where there is a CAPTCHA
+	// This is what the title is before changing to "CAPTCHA" (if CAPTCHA notification is turned on).
+	original_title: null,
+	// Shows on pages where there is a CAPTCHA
+	c_phrase: 'In order to accept your next HIT, please type this word into the text box below', 
 	elements: {
 		// globals.elements.chkbox_auto_accept
 		chkbox_auto_accept: document.querySelector('span.m-l-xs.detail-bar-value')
-	}
+	},
+	// Value to determine if on a task page
+	on_task_page:
+		/^https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/[A-Z0-9]+/
+		.exec(document.location.href)
 }
 // Set checkbox
 if (globals.elements.chkbox_auto_accept && 
@@ -2111,20 +2117,22 @@ function modifyIframe(el_iframe, top) {
 			// Move info bar to top.
 			var detail = document.getElementsByClassName('container-fluid project-detail-bar'),
 				timer, hd, rwd, aa;
-			if (detail) {console.log('found bar');
+			if (detail) {
+				// Timer.
+				// In order to not break timer, it is necessary to move
+				// timer's parentNode.
 				timer = detail[0].getElementsByClassName('completion-timer p-a-xs');
 				if (timer && timer.length) {
-					
+					//
 				} else {
 					timer = detail[0].getElementsByClassName('completion-timer');
 				}
-				// In order to not break timer, necessary to move
-				// timer's parentNode.
 				tools.add_item(timer[0].parentNode);
 				hd = detail[0].getElementsByTagName('a');
 				if (hd && hd[0].innerText.trim() == 'HIT Details') {
 					tools.add_item(hd[0].parentNode);
 				}
+				// Reward field.
 				rwd = detail[0].getElementsByClassName('detail-bar-label');
 				if (rwd) {
 					for (var i=0; i<rwd.length; i++) {
@@ -2139,36 +2147,45 @@ function modifyIframe(el_iframe, top) {
 						}
 					}
 				}
-				//~ // globals.elements.chkbox_auto_accept
-				//~ // Test:
-				//~ // 		var x=document.createElement('input');
-				//~ //		document.body.appendChild(x);
-				//~ //		x.id='abc';
-				//~ //		var y=document.createElement('label');
-				//~ //		y.htmlFor = 'abc';
-				//~ //		y.innerText = 'click';
-				//~ //		document.body.appendChild(y);
-				//~ var lbl_auto_accpt = document.createElement('label'),
-					//~ chk_auto_accpt = document.createElement('input'),
-					//~ spn_auto_accpt = document.createElement('span');
-				//~ spn_auto_accpt.appendChild(chk_auto_accpt);
-				//~ spn_auto_accpt.appendChild(lbl_auto_accpt);
-				//~ chk_auto_accpt.id		= SCRIPT_NAME+'chk_auto_accpt';
-				//~ chk_auto_accpt.type		= 'checkbox';
-				//~ lbl_auto_accpt.htmlFor	= SCRIPT_NAME+'chk_auto_accpt';
-				//~ lbl_auto_accpt.innerText= 'Auto-accept next HIT';
-				//~ lbl_auto_accpt.style.cursor = 'pointer';
-				//~ chk_auto_accpt.addEventListener('change', function() {
-					//~ // Hide to avoid scrollIntoView
-					//~ globals.elements.chkbox_auto_accept.style.display = 'none';
-					//~ // Change checked status of auto accept.
-					//~ globals.elements.chkbox_auto_accept.click();
-					//~ // Un-Hide
-					//~ globals.elements.chkbox_auto_accept.style.display = 'block';
-				//~ }, false);
-				//~ tools.add_item(spn_auto_accpt);
+				//////////////////////////////////////////////////////////
+				// This is code to create a faux-checkbox for auto-accept.
+				// It is functional. However, it turns out there is no
+				// issue with the page form when simply moving
+				// checkbox to page top.
+				//////////////////////////////////////////////////////////
+					//~ // globals.elements.chkbox_auto_accept
+					//~ // Test:
+					//~ // 		var x=document.createElement('input');
+					//~ //		document.body.appendChild(x);
+					//~ //		x.id='abc';
+					//~ //		var y=document.createElement('label');
+					//~ //		y.htmlFor = 'abc';
+					//~ //		y.innerText = 'click';
+					//~ //		document.body.appendChild(y);
+					//~ var lbl_auto_accpt = document.createElement('label'),
+						//~ chk_auto_accpt = document.createElement('input'),
+						//~ spn_auto_accpt = document.createElement('span');
+					//~ spn_auto_accpt.appendChild(chk_auto_accpt);
+					//~ spn_auto_accpt.appendChild(lbl_auto_accpt);
+					//~ chk_auto_accpt.id		= SCRIPT_NAME+'chk_auto_accpt';
+					//~ chk_auto_accpt.type		= 'checkbox';
+					//~ lbl_auto_accpt.htmlFor	= SCRIPT_NAME+'chk_auto_accpt';
+					//~ lbl_auto_accpt.innerText= 'Auto-accept next HIT';
+					//~ lbl_auto_accpt.style.cursor = 'pointer';
+					//~ chk_auto_accpt.addEventListener('change', function() {
+						//~ // Hide to avoid scrollIntoView
+						//~ globals.elements.chkbox_auto_accept.style.display = 'none';
+						//~ // Change checked status of auto accept.
+						//~ globals.elements.chkbox_auto_accept.click();
+						//~ // Un-Hide
+						//~ globals.elements.chkbox_auto_accept.style.display = 'block';
+					//~ }, false);
+					//~ tools.add_item(spn_auto_accpt);
+				////////////////////////////////////////////////////////
+				// End faux-checkbox code.
+				////////////////////////////////////////////////////////
 				
-				// old
+				// Move the auto-submit checkbox to page top.
 				aa = detail[0].getElementsByTagName('input');
 				if (aa && aa[0].parentNode.innerText.trim() == 'Auto-accept next HIT') {
 					// Just aa[0].parentNode is necessary in order
@@ -2557,7 +2574,8 @@ function load()
 			padding:0;\
 			z-index:10000;\
 			text-align:right;\
-			border-bottom:1px solid #aaccaa\
+			border-bottom:1px solid #aaccaa;\
+			background-color:ghostwhite;\
 		}'
 	);//background-color:#efefef;\
 	
@@ -2592,10 +2610,10 @@ function load()
 	// If working a task, then no need to move top-right
 	// info. bar to the left. Otherwise, shorten the top info bar to make
 	// top-right info bar move left.
-	var on_task_page = /^https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/[A-Z0-9]+/
-		.exec(document.location.href);
+	//~ var on_task_page = /^https:\/\/worker\.mturk\.com\/projects\/[A-Z0-9]+\/tasks\/[A-Z0-9]+/
+		//~ .exec(document.location.href);
 	document.body.appendChild(u);
-	if (!on_task_page) { //
+	if (!globals.on_task_page) { //
 		var main_page_head = document.getElementsByClassName('container-fluid me-bar');
 		if (main_page_head && main_page_head[0]) {
 			main_page_head[0].setAttribute('style','width:80%;');
@@ -2603,7 +2621,7 @@ function load()
 		u.style.border = 0;
 		u.style.borderLeft = '1px solid #a2a2a2';
 		u.style.height = '33px';
-		u.style.padding = '2px 6px';
+		u.style.padding = '2px 8px';
 	} else {
 		//~ var main_page_anchor = document.getElementsByClassName('col-xs-5 text-xs-right');
 		//~ var main_page_anchor = document.getElementsByClassName('row h4 text-muted m-b-0 p-y-sm');
@@ -2616,21 +2634,24 @@ function load()
 	/**
 	 * tools.add_item()
 	 * Method to quickly add elements to the tools menu div element.
+	 * 
+	 * @return Returns the container element for the added item.
 	 */
 	tools.add_item = function(html_element) {
 		var u = el({
 			'create':'div',
-			'id':'', //border collapse
-			'style':'float:right;\
-				height:28px;\
-				margin-left:-1px;\
-				border-left: 1px solid #a0a0a0;\
-				border-right:1px solid #a0a0a0;',
+			'id':'',
+			'style':'float:right; \
+				height: 28px; \
+				border-left: 1px solid #a2a2a2; \
+				padding: 4px 6px !important; \
+				',
 			'class':''
 		});
 		u.appendChild(html_element);
 		// Add to tools div
 		this.appendChild(u);
+		return u;
 	}
 	
 	/**
@@ -2642,12 +2663,20 @@ function load()
 		'value':'', //FLBS
 		'id':SCRIPT_NAME+'btn_show_menu'
 	});
-	tools.appendChild(u);
+	//~ tools.appendChild(u);
+	// After adding to menu, change padding to match show menu button.
+	var dc = tools.add_item(u);
+	dc.style.padding = '0';
+	// Override padding and border using setProperty.
+	// (i.e., do not override "style".)
+	if (globals.on_task_page) {
+		dc.style.setProperty('padding-left', '8px', 'important');
+		dc.style.setProperty('padding-right', '8px', 'important');
+	} else if (!globals.on_task_page) {	
+		dc.style.border = '0';
+		//~ dc.style.setProperty('border', '0', 'important');
+	}
 	u.onclick = function() {
-		//~ if (this.style.display != 'none') {
-			//~ this.style.display = 'none';
-			//~ showMenu();
-		//~ }
 		showMenu();
 	}
 	

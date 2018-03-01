@@ -30,6 +30,6 @@
 	"converted_from_user_script": true,
 	"description": "Productivity tools for Amazon.com's website mturk.com (Mechanical Turk). Adds a menu with various tools for workers.",
 	"name": "Tools for Amazon's Mechanical Turk",
-	"version": "1.1.6",
+	"version": "1.1.7",
 	"manifest_version": 2
 }
