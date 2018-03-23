@@ -130,7 +130,7 @@ function initial_tool_settings() {
 		
 		'IFRAME_HEIGHT': 6000,
 		
-		'IFRAME_OFFSET_TOP': 30,
+		'IFRAME_OFFSET_TOP': 40,
 		
 		'IFRAME_ENABLE_FULL_SCREEN': true,
 		
@@ -140,9 +140,7 @@ function initial_tool_settings() {
 		
 		'DATE_CAPTCHA_AUDIO_PLAYED': 0
 		
-		// Remove this.
-		// 12 Sep 2014
-		//'CAPTCHA_USING_HI_DEF': false
+		
 	};
 	
 	/**
@@ -384,7 +382,7 @@ function generate_container_basic(theMenu) {
 	/**
 	 * Enable full screen mode
 	 * 
-	 * // toggle https://stackoverflow.com/questions/309081/how-do-you-create-a-toggle-button
+	 * CSS Toggle: https://stackoverflow.com/questions/309081/how-do-you-create-a-toggle-button
 	 */
 	u = el({
 		'create':'div',
@@ -474,6 +472,7 @@ function generate_container_basic(theMenu) {
 	 * 
 	 * Todo: Add message about "Disable pop up blocking".
 	 * Todo: Consider Chrome/Mozilla api to disable switching to new tab.
+	 * Note: Tick marks are not yet supported for this.
 	 */
 	u = el({
 		'create':'div',
@@ -496,34 +495,8 @@ function generate_container_basic(theMenu) {
 				'Open and accept '+this.value+' tasks!';
 	}
 	GM_addStyle('input[type="range"]:hover {cursor:pointer;}');
-	// Tick marks are not yet supported.
-	//	//GM_addStyle(
-	//	//	//https://stackoverflow.com/questions/26612700/ticks-for-type-range-html-input#26613443
-	//	//	'input[type="range"]:-moz-range-track {\
-	//	//	padding: 0 10px;\
-	//	//	background: repeating-linear-gradient(to right, \
-	//	//		#ccc, \
-	//	//		#ccc 10%, \
-	//	//		#000 10%, \
-	//	//		#000 11%, \
-	//	//		#ccc 11%, \
-	//	//		#ccc 20%);\
-	//	//	}'
-	//	//);
-	//	//var u3 = el({
-	//	//	'create':'datalist',
-	//	//	'id':SCRIPT_NAME+'numsettings'
-	//	//});
-	//	//for (var i=1; i<=25; i++) {
-	//	//	var opt = document.createElement('option');
-	//	//	opt.innerText = i;
-	//	//	u3.appendChild(opt);
-	//	//}
-	//	//u.appendChild(u3);
-	//	//u2.list = SCRIPT_NAME+'numsettings';
 	var u3 = el({
 		'create':'datalist',
-		// 'id':SCRIPT_NAME+'numsettings' // Not yet supported
 	});
 	for (var i=1; i<=25; i++) {
 		var opt = document.createElement('option');
@@ -583,172 +556,39 @@ function generate_container_basic(theMenu) {
 	});
 	theMenu.appendChild(u);
 	
+	
 	/**
-	 * When a CAPTCHA appears, place cursor in the CAPTCHA box
-	 * 
+	 * Enable/Disable CAPTCHA 
 	 */
+	// Blank left field here.
 	u = el({
 		'create':'div',
 		'class':SCRIPT_NAME+'m1'
+	});
+	theMenu.appendChild(u);
+	// Right column
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
 	});
 	u2 = el({
 		'create':'input',
-		'type':'checkbox',
-		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_INPUT_FOCUS'
+		'type':'button',
+		'id':SCRIPT_NAME+'toggle_captcha_settings',
+		'value':'Enable all CAPTCHA settings',
+		'class':SCRIPT_NAME+'clickable_btn'
 	});
 	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'When a CAPTCHA appears, place cursor in the CAPTCHA box';
-	u.appendChild(document.createTextNode(u2));
+	// Information icon
 	u2 = el({
 		'create':'img',
 		'src':img_info64,
 		'class':SCRIPT_NAME+'img_info',
-		'alt':'When a CAPTCHA appears, place cursor in the CAPTCHA box? In addition, if previous CAPTCHA was entered incorrectly, this tool will clear the text from the previous try.'
+		'alt':'Pressing this button will toggle whether or not CAPTCHA settings are enabled.'
 	});
 	u.appendChild(u2);
+	// Append right div
 	theMenu.appendChild(u);
-	
-	/**
-	 * Display a red alert box when a CAPTCHA appears
-	 */
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-		'create':'input',
-		'type':'checkbox',
-		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_DISPLAY_ALERT'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'When CAPTCHA appears, display red alert icon on all pages';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-		'create':'img',
-		'src':img_info64,
-		'class':SCRIPT_NAME+'img_info',
-		'alt':'When a CAPTCHA appears, display red alert icon on all pages? In addition, this tool will change document title to "CAPTCHA".'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	
-	/**
-	 * Play audio sound the first time a CAPTCHA appears
-	 */
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-		'create':'input',
-		'type':'checkbox',
-		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_AUDIO_ALERT'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'When CAPTCHA appears, play an audio sound';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-		'create':'img',
-		'src':img_info64,
-		'class':SCRIPT_NAME+'img_info',
-		'alt':'When a CAPTCHA appears, play an audio sound? Audio snippet will be played once within a span of 60 seconds. Does not play on reload of the browser window or in any other tabs if less than 60 seconds has elapsed. In addition, this tool will change document title to "CAPTCHA".'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	
-	/**
-	 * CAPTCHA Audio Snippet
-	 * 
-	 */
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m1'
-	});
-	u2 = el({
-		'create':'select',
-		'style':'width:80%;text-align:left;',
-		'id':SCRIPT_NAME+'CAPTCHA_AUDIO_SNIPPET'
-	});
-	u3 = el({
-		'create':'option',
-		'value':'Random'
-	});
-	u3.appendChild(document.createTextNode('Random'));
-	u2.appendChild(u3);
-	
-	var count = 0;
-	for (var i in audio_snippets) {
-		u3 = el({
-			'create':'option',
-			'value':count
-		});
-		u3.appendChild(document.createTextNode(audio_snippets[i].title));
-		u2.appendChild(u3);
-		count++;
-	}
-	
-	x = OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET;
-	if (x != 'Random')
-		u2.selectedIndex = x*1 + 1;
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m2'
-	});
-	u2 = 'CAPTCHA Audio Snippet';
-	u.appendChild(document.createTextNode(u2));
-	u2 = el({
-		'create':'img',
-		'src':img_info64,
-		'class':SCRIPT_NAME+'img_info',
-		'alt':'Select an audio snippet. \
-			Audio snippets are embedded within extension. \
-			None of the audio is downloaded externally. \
-			Provided links are where the audio was originally downloaded. \
-			Applicable licenses at time of download were CC-0, \
-			CC-Sampling+, and CC-Attribution.'
-	});
-	u.appendChild(u2);
-	theMenu.appendChild(u);
-	
-	/**
-	 * Audio snippet detail
-	 * 
-	 */
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m1'
-	});
-	u.appendChild(document.createTextNode(' '));
-	theMenu.appendChild(u);
-	u = el({
-		'create':'div',
-		'class':SCRIPT_NAME+'m2',
-		'id':SCRIPT_NAME+'info_audio'
-	});
-	fill_audio_info(u, OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET); //
-	theMenu.appendChild(u);
-	u = el({
-		'create':'hr',
-	});
-	theMenu.appendChild(u);
-	
 	
 	/**
 	 * Display the "Return and Accept" button
@@ -962,10 +802,175 @@ function generate_containers_advanced(theMenu) {
 	});
 	u.appendChild(u2);
 	theMenu.appendChild(u);
-	//~ u = el({
-		//~ 'create':'hr',
-	//~ });
-	//~ theMenu.appendChild(u);
+	
+	// Add a spacer
+	u = el({
+		'create':'hr',
+	});
+	theMenu.appendChild(u);
+	
+	// Captcha settings
+	/**
+	 * When a CAPTCHA appears, place cursor in the CAPTCHA box
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_INPUT_FOCUS'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'When a CAPTCHA appears, place cursor in the CAPTCHA box';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'When a CAPTCHA appears, place cursor in the CAPTCHA box? In addition, if previous CAPTCHA was entered incorrectly, this tool will clear the text from the previous try.'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * Display a red alert box when a CAPTCHA appears
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_DISPLAY_ALERT'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'When CAPTCHA appears, display red alert icon on all pages';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'When a CAPTCHA appears, display red alert icon on all pages? In addition, this tool will change document title to "CAPTCHA".'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * Play audio sound the first time a CAPTCHA appears
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'input',
+		'type':'checkbox',
+		'id':SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_AUDIO_ALERT'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'When CAPTCHA appears, play an audio sound';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'When a CAPTCHA appears, play an audio sound? Audio snippet will be played once within a span of 60 seconds. Does not play on reload of the browser window or in any other tabs if less than 60 seconds has elapsed. In addition, this tool will change document title to "CAPTCHA".'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * CAPTCHA Audio Snippet
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u2 = el({
+		'create':'select',
+		'style':'width:80%;text-align:left;',
+		'id':SCRIPT_NAME+'CAPTCHA_AUDIO_SNIPPET'
+	});
+	u3 = el({
+		'create':'option',
+		'value':'Random'
+	});
+	u3.appendChild(document.createTextNode('Random'));
+	u2.appendChild(u3);
+	
+	var count = 0;
+	for (var i in audio_snippets) {
+		u3 = el({
+			'create':'option',
+			'value':count
+		});
+		u3.appendChild(document.createTextNode(audio_snippets[i].title));
+		u2.appendChild(u3);
+		count++;
+	}
+	
+	x = OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET;
+	if (x != 'Random')
+		u2.selectedIndex = x*1 + 1;
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2'
+	});
+	u2 = 'CAPTCHA Audio Snippet';
+	u.appendChild(document.createTextNode(u2));
+	u2 = el({
+		'create':'img',
+		'src':img_info64,
+		'class':SCRIPT_NAME+'img_info',
+		'alt':'Select an audio snippet. \
+			Audio snippets are embedded within extension. \
+			None of the audio is downloaded externally. \
+			Provided links are where the audio was originally downloaded. \
+			Applicable licenses at time of download were CC-0, \
+			CC-Sampling+, and CC-Attribution.'
+	});
+	u.appendChild(u2);
+	theMenu.appendChild(u);
+	
+	/**
+	 * Audio snippet detail
+	 * 
+	 */
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m1'
+	});
+	u.appendChild(document.createTextNode(' '));
+	theMenu.appendChild(u);
+	u = el({
+		'create':'div',
+		'class':SCRIPT_NAME+'m2',
+		'id':SCRIPT_NAME+'info_audio'
+	});
+	fill_audio_info(u, OBJECT_MT_TOOLS_LOCAL_STORAGE.CAPTCHA_AUDIO_SNIPPET); //
+	theMenu.appendChild(u);
 }
 function generate_containers(theMenu, show_advanced_menu = false) {
 	if (!show_advanced_menu) {
@@ -1406,8 +1411,11 @@ function showMenu_applyActions() {
 	if (u)
 		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_DISPLAY_ALERT;
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_CAPTCHA_AUDIO_ALERT');
-	if (u)
+	if (u) {
 		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT;
+		console.log(OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_CAPTCHA_AUDIO_ALERT);
+		console.log(OBJECT_MT_TOOLS_LOCAL_STORAGE);
+	}
 	u = document.getElementById(SCRIPT_NAME+'IS_ACTIVE_RETURN_AND_ACCEPT');
 	if (u)
 		u.checked = OBJECT_MT_TOOLS_LOCAL_STORAGE.IS_ACTIVE_RETURN_AND_ACCEPT;
@@ -1599,6 +1607,42 @@ function showMenu_applyActions() {
 			localStorage['OBJECT_MT_TOOLS_LOCAL_STORAGE_reset_accpt_'+SCRIPT_NAME] = false;
 			// Run
 			stopAcceptingJobs_run();
+		}
+	}
+	
+	/**
+	 * Toggle CAPTCHA settings.
+	 * 
+	 */
+	u = document.getElementById(SCRIPT_NAME + 'toggle_captcha_settings');
+	if (u) {
+		// Set the initial value.
+		var opts = [
+			'IS_ACTIVE_AUTO_ACCEPT_NEXT_HIT',		
+			'IS_ACTIVE_CAPTCHA_INPUT_FOCUS',
+			'IS_ACTIVE_CAPTCHA_DISPLAY_ALERT',
+			'IS_ACTIVE_CAPTCHA_AUDIO_ALERT',
+		];
+		u.value = 'Disable all CAPTCHA settings';
+		u.opts = opts;
+		for (var i in u.opts) {
+			if (OBJECT_MT_TOOLS_LOCAL_STORAGE[ u.opts[i] ] == false) {
+				u.value = 'Enable all CAPTCHA settings';
+				break;
+			}
+		}
+		u.onclick = function () {
+			if (this.value == 'Disable all CAPTCHA settings') {
+				this.value = 'Enable all CAPTCHA settings';
+				// Set all to false.
+				for (var i in this.opts)
+					OBJECT_MT_TOOLS_LOCAL_STORAGE[ this.opts[i] ] = false;
+			} else {
+				this.value = 'Disable all CAPTCHA settings';
+				// Set all to true
+				for (var i in this.opts)
+					OBJECT_MT_TOOLS_LOCAL_STORAGE[ this.opts[i] ] = true;
+			}
 		}
 	}
 }
