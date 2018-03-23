@@ -1,5 +1,5 @@
 /**
- * Copyright David Shumway 2013-2017 and FLBS.
+ * Copyright David Shumway 2013-2018 and FLBS.
  * License: GPLv3.
  * Contact: david.shumway@gmail.com, david@flbs.biz
  * 
@@ -1286,7 +1286,7 @@ function showMenu(show_advanced_menu = false) {
 	/**
 	 * Copyright
 	 */
-	theMenu.appendChild(document.createTextNode('© 2013-2017 '));
+	theMenu.appendChild(document.createTextNode('© 2013-2018 '));
 	u = el({
 		'create':'a',
 		'style':'font-weight:bold;',
