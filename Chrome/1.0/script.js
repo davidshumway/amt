@@ -1643,6 +1643,10 @@ function showMenu_applyActions() {
 				for (var i in this.opts)
 					OBJECT_MT_TOOLS_LOCAL_STORAGE[ this.opts[i] ] = true;
 			}
+			// Automatically save settings.
+			var u = document.getElementById(SCRIPT_NAME+'save');
+			if (u)
+				u.click();
 		}
 	}
 }
